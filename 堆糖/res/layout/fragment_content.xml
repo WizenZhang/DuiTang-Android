@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+    
+    <com.example.duitang.view.NoScrollViewPager
+        android:id="@+id/vp_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+		android:layout_weight="1"/>
+
+        <RadioGroup
+            android:id="@+id/rg_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f7f8f9"
+            android:orientation="horizontal" >
+
+        <RadioButton 
+            android:id="@+id/rb_home"
+            style="@style/BottomTabStyle"
+            android:drawableTop="@drawable/btn_tab_home_selector"
+           android:textSize="12dp"
+            android:text="首页"/>
+
+        <RadioButton
+            android:id="@+id/rb_category"
+            style="@style/BottomTabStyle"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/btn_tab_category_selector"
+            android:textSize="12dp"
+            android:text="分类"/>
+
+        <RadioButton 
+            android:id="@+id/rb_store"
+            style="@style/BottomTabStyle"
+            android:drawableTop="@drawable/btn_tab_love_selector"
+           android:textSize="12dp"
+            android:text="收藏"/>
+        
+        </RadioGroup>
+    
+
+</LinearLayout>
