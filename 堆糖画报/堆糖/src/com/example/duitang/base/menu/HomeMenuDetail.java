@@ -11,17 +11,30 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.duitang.R;
 import com.example.duitang.base.BaseMenuDetailpager;
+import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData;
 import com.example.duitang.model.BannerData.BannerDatas;
+import com.example.duitang.model.MainData;
+import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.view.GridViewWithHeaderAndFooter;
+import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -29,19 +42,21 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	
 	@ViewInject(R.id.vp_banner)
 	private ViewPager mViewPager;
-	
-	private BitmapUtils utils;
+
 	private BannerData mBannerData;
 	private ArrayList<BannerDatas> mTopData;
 	
+	private ArrayList<ObjectList> mObjectListData;
+	
+	private MainData mMainData;
 	@ViewInject(R.id.tv_title)
 	private TextView tvTitle;//轮播标题
 	
 	@ViewInject(R.id.indicator)
 	private CirclePageIndicator mIndicator;//轮播位置指示器
 	
-	@ViewInject(R.id.lv_list)
-	private ListView lvList;//列表
+	@ViewInject(R.id.gv_list)
+	private GridViewWithHeaderAndFooter gridView;//列表
 	
 	private Handler mHandler;
 	
@@ -64,7 +79,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 		ViewUtils.inject(this,headerView);
 		
 		//以头布局的形式加载给listView
-		lvList.addHeaderView(headerView);
+		gridView.addHeaderView(headerView); 
 //		mViewPager.setOnPageChangeListener(this);
 		return view;
 	}
@@ -72,15 +87,16 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	@Override
 	public void initData() {
 		
-//		if (mTopData != null) {
-			mListAdapter = new ListAdapter();
-			lvList.setAdapter(mListAdapter);
-//		}
+
 //		Log.i("tag", "传递结果:"+ mTopData);
 		mViewPager.setAdapter(new TopNewsAdapter());
 		
 		autoPlay();// 自动轮播条显示
+		
+		getDataFromServer();
+		
 	}
+	
 	private void autoPlay() {
 		mIndicator.setViewPager(mViewPager);
 		mIndicator.setSnap(true);// 支持快照显示
@@ -107,13 +123,56 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 			mHandler.sendEmptyMessageDelayed(0, 3000);// 延时3秒后发消息
 		}
 	}
+	
+	/**
+	 * 从服务器获取数据
+	 */
+	private void getDataFromServer() {
+		HttpUtils utils = new HttpUtils();
+		
+		//使用xUtils发送请求
+		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
+
+			@Override
+			public void onSuccess(ResponseInfo<String> responseInfo) {
+				String result = responseInfo.result;
+				
+//				Log.i("tag", "返回结果："+result);
+				parseData(result);
+			}
+			@Override
+			public void onFailure(HttpException error, String msg) {
+				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
+				error.printStackTrace();	
+			}
+		});
+	}
+	
+	/**
+	 * 解析网络数据
+	 * @param result
+	 */
+	private void parseData(String result) {
+
+		Gson gson = new Gson();
+		mMainData = gson.fromJson(result,MainData.class);
+		
+		mObjectListData = mMainData.data.object_list;
+
+		if (mObjectListData != null) {
+			mListAdapter = new ListAdapter();
+			gridView.setAdapter(mListAdapter);
+		}
+//		Log.i("tag", "解析结果:"+ mObjectListData.size());
+		
+	}
 	/**
 	 * 头条新闻适配器
 	 * @author Wizen
 	 *
 	 */
 	class TopNewsAdapter extends PagerAdapter{
-
+		private BitmapUtils utils;
 		public TopNewsAdapter () {
 			utils = new BitmapUtils(mActivity);
 			utils.configDefaultLoadingImage(R.drawable.image_default);
@@ -149,26 +208,29 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	}
 	
 	/**
-	 * 新闻列表的适配器
+	 * 列表的适配器
 	 * @author Wizen
 	 *
 	 */
 	class ListAdapter extends BaseAdapter{
 
-		private BitmapUtils utils;
+		private BitmapUtils utilsPhoto;
+		private BitmapUtils utilsAvatar;
 		
 		 public ListAdapter(){
-	        	utils = new BitmapUtils(mActivity);
-	        	utils.configDefaultLoadingImage(R.drawable.image_default);
+			    utilsPhoto= new BitmapUtils(mActivity);
+			    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
+			    utilsAvatar= new BitmapUtils(mActivity);
+			    utilsAvatar.configDefaultLoadingImage(R.drawable.image_default);
 	        }
 		@Override
 		public int getCount() {
-			return mTopData.size();
+			return mObjectListData.size();
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return mTopData.get(position);
+		public ObjectList getItem(int position) {
+			return mObjectListData.get(position);
 		}
 
 		@Override
@@ -178,12 +240,50 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = View.inflate(mActivity, R.layout.list_news_item, null);
+			ViewHolder holder;
+			if (convertView == null) {
+				convertView = View.inflate(mActivity, R.layout.list_item, null);
+
+				holder = new ViewHolder();
+				holder.ivPhoto =  (ImageView) convertView.findViewById(R.id.iv_photo);
+				holder.tvMsg =  (TextView) convertView.findViewById(R.id.tv_msg);
+                holder.btReply = (Button) convertView.findViewById(R.id.bt_reply);
+                holder.btLike = (Button) convertView.findViewById(R.id.bt_like);
+                holder.btFavorite = (Button) convertView.findViewById(R.id.bt_favorite);
+                holder.ivAvatar =  (ImageView) convertView.findViewById(R.id.iv_avatar);
+                holder.tvName =  (TextView) convertView.findViewById(R.id.tv_name);
+                holder.tvAuthor =  (TextView) convertView.findViewById(R.id.tv_author);
+                
+                convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			    ObjectList item = getItem(position);
+			    utilsPhoto.display(holder.ivPhoto, item.photo.path);
+			    holder.tvMsg.setText(item.msg);
+			    holder.btReply.setText(item.reply_count);
+			    holder.btLike.setText(item.like_count);
+			    holder.btFavorite.setText(item.favorite_count);
+			    utilsAvatar.display(holder.ivAvatar, item.sender.avatar);
+			    holder.tvName.setText(item.album.name);
+			    holder.tvAuthor.setText("by:" + item.sender.username);
+			    
 			return convertView;
 		}
 		
 	}
 
+	static class ViewHolder {
+		public ImageView ivPhoto;
+		public TextView tvMsg;
+		public Button btReply;
+		public Button btLike;
+		public Button btFavorite;
+		public ImageView ivAvatar;
+		public TextView tvName;
+		public TextView tvAuthor;
+	}
+	
 	@Override
 	public void onPageScrolled(int position, float positionOffset,
 			int positionOffsetPixels) {

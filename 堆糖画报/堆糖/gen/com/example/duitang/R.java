@@ -348,42 +348,49 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int default_title_indicator_top_padding=0x7f07000c;
     }
     public static final class drawable {
-        public static final int btn_tab_category_selector=0x7f020000;
-        public static final int btn_tab_home_selector=0x7f020001;
-        public static final int btn_tab_love_selector=0x7f020002;
-        public static final int btn_tab_text_selector=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int image_default=0x7f020005;
-        public static final int img_menu=0x7f020006;
-        public static final int launch_copyright=0x7f020007;
-        public static final int launch_duitang=0x7f020008;
-        public static final int launch_image=0x7f020009;
-        public static final int news_tab_item_bg_select=0x7f02000a;
-        public static final int tabbar_item_category_normal=0x7f02000b;
-        public static final int tabbar_item_category_selected=0x7f02000c;
-        public static final int tabbar_item_communication_normal=0x7f02000d;
-        public static final int tabbar_item_communication_selected=0x7f02000e;
-        public static final int tabbar_item_home_normal=0x7f02000f;
-        public static final int tabbar_item_home_selected=0x7f020010;
-        public static final int title_white_bg=0x7f020011;
-        public static final int vpi__tab_indicator=0x7f020012;
-        public static final int vpi__tab_selected_focused_holo=0x7f020013;
-        public static final int vpi__tab_selected_holo=0x7f020014;
-        public static final int vpi__tab_selected_pressed_holo=0x7f020015;
-        public static final int vpi__tab_text_color_indicator=0x7f020016;
-        public static final int vpi__tab_unselected_focused_holo=0x7f020017;
-        public static final int vpi__tab_unselected_holo=0x7f020018;
-        public static final int vpi__tab_unselected_pressed_holo=0x7f020019;
+        public static final int blog_list_icon_comments=0x7f020000;
+        public static final int blog_list_icon_good=0x7f020001;
+        public static final int blog_list_icon_star=0x7f020002;
+        public static final int btn_tab_category_selector=0x7f020003;
+        public static final int btn_tab_home_selector=0x7f020004;
+        public static final int btn_tab_love_selector=0x7f020005;
+        public static final int btn_tab_text_selector=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
+        public static final int image_default=0x7f020008;
+        public static final int img_menu=0x7f020009;
+        public static final int launch_copyright=0x7f02000a;
+        public static final int launch_duitang=0x7f02000b;
+        public static final int launch_image=0x7f02000c;
+        public static final int news_tab_item_bg_select=0x7f02000d;
+        public static final int tabbar_item_category_normal=0x7f02000e;
+        public static final int tabbar_item_category_selected=0x7f02000f;
+        public static final int tabbar_item_communication_normal=0x7f020010;
+        public static final int tabbar_item_communication_selected=0x7f020011;
+        public static final int tabbar_item_home_normal=0x7f020012;
+        public static final int tabbar_item_home_selected=0x7f020013;
+        public static final int title_white_bg=0x7f020014;
+        public static final int vpi__tab_indicator=0x7f020015;
+        public static final int vpi__tab_selected_focused_holo=0x7f020016;
+        public static final int vpi__tab_selected_holo=0x7f020017;
+        public static final int vpi__tab_selected_pressed_holo=0x7f020018;
+        public static final int vpi__tab_text_color_indicator=0x7f020019;
+        public static final int vpi__tab_unselected_focused_holo=0x7f02001a;
+        public static final int vpi__tab_unselected_holo=0x7f02001b;
+        public static final int vpi__tab_unselected_pressed_holo=0x7f02001c;
     }
     public static final class id {
-        public static final int action_settings=0x7f0b0014;
+        public static final int action_settings=0x7f0b001a;
         public static final int bottom=0x7f0b0003;
-        public static final int btn_menu=0x7f0b0013;
+        public static final int bt_favorite=0x7f0b0015;
+        public static final int bt_like=0x7f0b0014;
+        public static final int bt_reply=0x7f0b0013;
+        public static final int btn_menu=0x7f0b0019;
         public static final int fl_content=0x7f0b0007;
+        public static final int gv_list=0x7f0b0010;
         public static final int imageView1=0x7f0b0006;
         public static final int indicator=0x7f0b000f;
-        public static final int iv_pic=0x7f0b0011;
-        public static final int lv_list=0x7f0b0010;
+        public static final int iv_avatar=0x7f0b0016;
+        public static final int iv_photo=0x7f0b0011;
         public static final int none=0x7f0b0000;
         public static final int rb_category=0x7f0b000b;
         public static final int rb_home=0x7f0b000a;
@@ -392,7 +399,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int rl_root=0x7f0b0005;
         public static final int top=0x7f0b0004;
         public static final int triangle=0x7f0b0001;
-        public static final int tv_date=0x7f0b0012;
+        public static final int tv_author=0x7f0b0018;
+        public static final int tv_msg=0x7f0b0012;
+        public static final int tv_name=0x7f0b0017;
         public static final int tv_title=0x7f0b000e;
         public static final int underline=0x7f0b0002;
         public static final int vp_banner=0x7f0b000d;
@@ -412,7 +421,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int home_detail=0x7f030003;
         public static final int home_header=0x7f030004;
         public static final int home_list=0x7f030005;
-        public static final int list_news_item=0x7f030006;
+        public static final int list_item=0x7f030006;
         public static final int navigation_bar=0x7f030007;
     }
     public static final class menu {
@@ -453,6 +462,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         /** 拦截radioButton的样式  
          */
         public static final int BottomTabStyle=0x7f080007;
+        /** 拦截Button的样式  
+         */
+        public static final int CommentStyle=0x7f080008;
         public static final int TextAppearance_TabPageIndicator=0x7f080003;
         public static final int Theme_PageIndicatorDefaults=0x7f080000;
         public static final int Widget=0x7f080001;

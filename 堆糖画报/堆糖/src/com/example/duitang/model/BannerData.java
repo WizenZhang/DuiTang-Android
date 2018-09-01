@@ -3,7 +3,7 @@ package com.example.duitang.model;
 import java.util.ArrayList;
 
 /**
- * 首页图片轮播数据
+ * 主页上部图片翻转接口
  * @author Wizen
  *
  */
