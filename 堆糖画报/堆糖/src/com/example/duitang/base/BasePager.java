@@ -29,7 +29,7 @@ public Activity mActivity;
 	 */
 	public void initViews() {
 		
-		mRootview = View.inflate(mActivity, R.layout.base_pager, null);
+		mRootview = View.inflate(mActivity, R.layout.navigation_bar, null);
 	
 		tvTitle = (TextView) mRootview.findViewById(R.id.tv_title);
 		
