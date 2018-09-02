@@ -1,6 +1,7 @@
 package com.example.duitang.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.example.duitang.model.BannerData.BannerDatas;
 
@@ -16,7 +17,7 @@ public class MainData {
 	
 	public class Data {
 		public String more;
-		public ArrayList<ObjectList> object_list;
+		public LinkedList<ObjectList> object_list;
 	}
 	
 	public class ObjectList {

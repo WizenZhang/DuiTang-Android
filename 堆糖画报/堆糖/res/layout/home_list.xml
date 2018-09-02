@@ -2,14 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAEBEC"
-    android:orientation="vertical" >
-     <com.example.duitang.view.RefreshListView 
-        android:id="@+id/lv_list"
-	    android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:cacheColorHint="#fff"
-        android:layout_weight="1">
-        ></com.example.duitang.view.RefreshListView>
+    android:background="#EAEBEC" >
+    <me.maxwin.view.XListView
+        android:id="@+id/list"
+        android:scrollbars="vertical"
+         android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

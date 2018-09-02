@@ -1,72 +1,67 @@
 package com.example.duitang.base.menu;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import me.maxwin.view.XListView;
+import me.maxwin.view.XListView.IXListViewListener;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.AsyncTask.Status;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
-import android.widget.ListView;
 import android.widget.TextView;
-
+import com.dodowaterfall.Helper;
+import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.duitang.R;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.global.NetInterface;
-import com.example.duitang.model.BannerData;
 import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
-import com.example.duitang.view.RefreshListView;
-import com.example.duitang.view.RefreshListView.OnRefreshListener;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.viewpagerindicator.CirclePageIndicator;
 
-public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeListener{
+public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewListener,OnPageChangeListener{
+	
+	private MainData mMainData;
+	private ArrayList<BannerDatas> mTopData;
+//	private ArrayList<ObjectList> mObjectListData;
+	private LinkedList<ObjectList> mObjectListData;
+	
+	@ViewInject(R.id.list)
+	private XListView xListView;//列表
 	
 	@ViewInject(R.id.vp_banner)
 	private ViewPager mViewPager;
-
-	private BannerData mBannerData;
-	private ArrayList<BannerDatas> mTopData;
-	
-	private ArrayList<ObjectList> mObjectListData;
-	
-	private String mMore;// 更多页面的地址
-	
-	private MainData mMainData;
-	@ViewInject(R.id.tv_title)
-	private TextView tvTitle;//轮播标题
 	
 	@ViewInject(R.id.indicator)
 	private CirclePageIndicator mIndicator;//轮播位置指示器
 	
-	@ViewInject(R.id.lv_list)
-	private RefreshListView lvList;//列表
-	
 	private Handler mHandler;
 	
-	private ListAdapter mListAdapter;
+	private XListAdapter mListAdapter;
+	
+	private ImageFetcher mImagesFetcher;
+
+	ContentTask task = new ContentTask(mActivity, 2);
 	
 	public HomeMenuDetail(Activity activity, ArrayList<BannerDatas> data) {
 		super(activity);
@@ -74,43 +69,201 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 //		Log.i("tag", "传递结果:"+ mTopData);
 	}
 
+	private class ContentTask extends AsyncTask<String, Integer, List<ObjectList>> {
+
+        private Context mContext;
+        private int mType = 1;
+
+        public ContentTask(Context context, int type) {
+            super();
+            mContext = context;
+            mType = type;
+        }
+
+        @Override
+        protected List<ObjectList> doInBackground(String... params) {
+            try {
+                return parseNewsJSON(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<ObjectList> result) {
+            if (mType == 1) {
+
+            	mListAdapter.addItemTop(result);
+            	mListAdapter.notifyDataSetChanged();
+            	xListView.stopRefresh();
+
+            } else if (mType == 2) {
+            	xListView.stopLoadMore();
+                mListAdapter.addItemLast(result);
+                mListAdapter.notifyDataSetChanged();
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        public List<ObjectList> parseNewsJSON(String url) throws IOException {
+            List<ObjectList> duitangs = new ArrayList<ObjectList>();
+            String json = "";
+            
+            //从服务器获取数据
+            if (Helper.checkConnection(mContext)) {
+                try {
+                    json = Helper.getStringFromUrl(url);
+                } catch (IOException e) {
+                    Log.e("IOException is : ", e.toString());
+                    e.printStackTrace();
+                    return duitangs;
+                }
+            }               
+//            Log.d("tag", "json:" + json);
+            //解析网络数据
+            if (null != json) {
+		            Gson gson = new Gson();
+		 
+		    		mMainData = gson.fromJson(json,MainData.class);
+		    		duitangs = mMainData.data.object_list;
+//		    		Log.d("tag", "json:" + duitangs);
+            }
+            return duitangs;
+        }
+    }
+
+	
+	/**
+     * 添加内容
+     * 
+     * @param pageindex
+     * @param type
+     * 1为下拉刷新 2为加载更多
+     */
+    private void AddItemToContainer(int type) {
+        if (task.getStatus() != Status.RUNNING) {
+//            String url = "http://www.duitang.com/album/1733789/masn/p/" + pageindex + "/24/";
+            ContentTask task = new ContentTask(mActivity, type);
+            task.execute(NetInterface.MAIN);
+
+        }
+    }
+
+	/**
+	 * 列表的适配器
+	 * @author Wizen
+	 *
+	 */
+	class XListAdapter extends BaseAdapter{
+
+		private Context mContext;
+        private XListView mListView;
+        private BitmapUtils utilsPhoto;
+		private BitmapUtils utilsAvatar;
+		
+        public XListAdapter(Context context, XListView xListView) {
+            mContext = context;
+            mObjectListData = new LinkedList<ObjectList>();
+            mListView = xListView;
+            utilsPhoto= new BitmapUtils(mActivity);
+		    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
+		    utilsAvatar= new BitmapUtils(mActivity);
+		    utilsAvatar.configDefaultLoadingImage(R.drawable.image_default);
+        }
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return mObjectListData.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return mObjectListData.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+	            ViewHolder holder;
+
+	            if (convertView == null) {
+	                LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
+	                convertView = layoutInflator.inflate(R.layout.list_item, null);
+	                
+	                holder = new ViewHolder();
+	                holder.ivPhoto =  (ImageView) convertView.findViewById(R.id.iv_photo);
+					holder.tvMsg =  (TextView) convertView.findViewById(R.id.tv_msg);
+	                holder.btReply = (Button) convertView.findViewById(R.id.bt_reply);
+	                holder.btLike = (Button) convertView.findViewById(R.id.bt_like);
+	                holder.btFavorite = (Button) convertView.findViewById(R.id.bt_favorite);
+	                holder.ivAvatar =  (ImageView) convertView.findViewById(R.id.iv_avatar);
+	                holder.tvName =  (TextView) convertView.findViewById(R.id.tv_name);
+	                holder.tvAuthor =  (TextView) convertView.findViewById(R.id.tv_author);
+	                
+	                convertView.setTag(holder);
+	            } else {
+					holder = (ViewHolder) convertView.getTag();
+				}
+                   ObjectList item = mObjectListData.get(position);
+
+                    utilsPhoto.display(holder.ivPhoto, item.photo.path);
+	   			    holder.tvMsg.setText(item.msg);
+	   			    holder.btReply.setText(item.reply_count);
+	   			    holder.btLike.setText(item.like_count);
+	   			    holder.btFavorite.setText(item.favorite_count);
+	   			    utilsAvatar.display(holder.ivAvatar, item.sender.avatar);
+	   			    holder.tvName.setText(item.album.name);
+	   			    holder.tvAuthor.setText("by:" + item.sender.username);
+	            return convertView;
+		}
+
+        class ViewHolder {
+			public ImageView ivPhoto;
+			public TextView tvMsg;
+			public Button btReply;
+			public Button btLike;
+			public Button btFavorite;
+			public ImageView ivAvatar;
+			public TextView tvName;
+			public TextView tvAuthor;
+		}
+		
+        public void addItemLast(List<ObjectList> datas) {
+        	mObjectListData.addAll(datas);
+        }
+
+        public void addItemTop(List<ObjectList> datas) {
+            for (ObjectList info : datas) {
+            	mObjectListData.addFirst(info);
+            }
+        }
+	}
+
+	
 	@Override
 	public View initViews() {
-		
 		View view = View.inflate(mActivity, R.layout.home_list, null);
+
 		//加载头布局
 		View headerView = View.inflate(mActivity, R.layout.home_header, null);
 		
 		ViewUtils.inject(this,view);
 		ViewUtils.inject(this,headerView);
 		
-		
 		//以头布局的形式加载给listView
-		lvList.addHeaderView(headerView); 
-//		MotionEvent ev = null;
-//		gridView.onTouchEvent(MotionEvent ev);
-//		Log.i("tag", "Padding:" + String.valueOf((int) ev.getRawY()));
-//		mViewPager.setOnPageChangeListener(this);
-		// 设置下拉刷新监听
-
-		lvList.setOnRefreshListener(new OnRefreshListener() {
-
-			@Override
-			public void onRefresh() {
-				getDataFromServer();
-			}
-
-			@Override
-			public void onLoadMore() {
-				if (mMore!= null) {
-					getMoreDataFromServer();
-				} else {
-					Toast.makeText(mActivity, "最后一页了", Toast.LENGTH_SHORT)
-							.show();
-					lvList.onRefreshComplete(false);// 收起加载更多的布局
-						}
-					}
-				});
+		
+		xListView.addHeaderView(headerView);
 		
 		return view;
 	}
@@ -118,96 +271,31 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	@Override
 	public void initData() {
 		
-
-//		Log.i("tag", "传递结果:"+ mTopData);
-
-		getDataFromServer();
-		
+		xListView.setPullLoadEnable(true);
+		xListView.setXListViewListener(this);
+      
+		mListAdapter = new XListAdapter(mActivity, xListView);
+		xListView.setAdapter(mListAdapter);
+//        
+        mImagesFetcher = new ImageFetcher(mActivity, 240);
+        mImagesFetcher.setLoadingImage(R.drawable.empty_photo);
+        mImagesFetcher.setExitTasksEarly(false);
+        
+        if (mTopData!= null) {
+            mViewPager.setAdapter(new TopNewsAdapter());
+            mIndicator.setViewPager(mViewPager);
+    		mIndicator.setSnap(true);// 支持快照显示
+            mIndicator.setOnPageChangeListener(this);
+            mIndicator.onPageSelected(0);// 让指示器重新定位到第一个点	
+            
+ 		    autoPlay();// 自动轮播条显示
+ 		}
+        
+        AddItemToContainer(2);
 	}
-	
-	/**
-	 * 从服务器获取数据
-	 */
-	private void getDataFromServer() {
-		HttpUtils utils = new HttpUtils();
-		
-		//使用xUtils发送请求
-		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
 
-			@Override
-			public void onSuccess(ResponseInfo<String> responseInfo) {
-				String result = responseInfo.result;
-				
-//				Log.i("tag", "返回结果："+result);
-				parseData(result, false);
-				
-				lvList.onRefreshComplete(true);
-			}
-			@Override
-			public void onFailure(HttpException error, String msg) {
-				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
-				error.printStackTrace();	
-				lvList.onRefreshComplete(false);
-			}
-		});
-	}
-	/**
-	 * 加载下一页数据
-	 */
-	private void getMoreDataFromServer() {
-		HttpUtils utils = new HttpUtils();
-		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
-
-			@Override
-			public void onSuccess(ResponseInfo<String> responseInfo) {
-				String result = (String) responseInfo.result;
-
-				parseData(result, true);
-
-				lvList.onRefreshComplete(true);
-			}
-
-			@Override
-			public void onFailure(HttpException error, String msg) {
-				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
-				error.printStackTrace();
-				lvList.onRefreshComplete(false);
-			}
-		});
-	}
-	/**
-	 * 解析网络数据
-	 * @param result
-	 */
-	private void parseData(String result,boolean isMore) {
-
-		Gson gson = new Gson();
-		mMainData = gson.fromJson(result,MainData.class);
-		// 处理下一页链接
-		String more = mMainData.data.more;
-		if (!TextUtils.isEmpty(more)) {
-			mMore = more;
-		} else {
-			mMore = null;
-		}
-	if (!isMore) {	
-		if (mTopData!= null) {
-			mViewPager.setAdapter(new TopNewsAdapter());
-			mIndicator.setViewPager(mViewPager);
-			mIndicator.setSnap(true);// 支持快照显示
-			mIndicator.setOnPageChangeListener(this);
-
-			mIndicator.onPageSelected(0);// 让指示器重新定位到第一个点
-			tvTitle.setText(mTopData.get(0).description);
-		}
-		
-		mObjectListData = mMainData.data.object_list;		
-		if (mObjectListData != null) {
-			mListAdapter = new ListAdapter();
-			lvList.setAdapter(mListAdapter);
-		}
-//		Log.i("tag", "解析结果:"+ mObjectListData.size());
-		// 自动轮播条显示
+	private void autoPlay() {
+        
 		if (mHandler == null) {
 			mHandler = new Handler() {
 				public void handleMessage(android.os.Message msg) {
@@ -227,15 +315,10 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 
 			mHandler.sendEmptyMessageDelayed(0, 3000);// 延时3秒后发消息
 		}
-	} else {// 如果是加载下一页,需要将数据追加给原来的集合
-		ArrayList<ObjectList> objectList = mMainData.data.object_list;
-		mObjectListData.addAll(objectList);
-		mListAdapter.notifyDataSetChanged();
 	}
-
-}
+	
 	/**
-	 * 头条新闻适配器
+	 * HeadView轮播条适配器
 	 * @author Wizen
 	 *
 	 */
@@ -274,100 +357,33 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 			container.removeView((View) object);
 		}
 	}
-	
-	/**
-	 * 列表的适配器
-	 * @author Wizen
-	 *
-	 */
-	class ListAdapter extends BaseAdapter{
-
-		private BitmapUtils utilsPhoto;
-		private BitmapUtils utilsAvatar;
-		
-		 public ListAdapter(){
-			    utilsPhoto= new BitmapUtils(mActivity);
-			    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
-			    utilsAvatar= new BitmapUtils(mActivity);
-			    utilsAvatar.configDefaultLoadingImage(R.drawable.image_default);
-	        }
-		@Override
-		public int getCount() {
-			return mObjectListData.size();
-		}
-
-		@Override
-		public ObjectList getItem(int position) {
-			return mObjectListData.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder holder;
-			if (convertView == null) {
-				convertView = View.inflate(mActivity, R.layout.list_item, null);
-
-				holder = new ViewHolder();
-				holder.ivPhoto =  (ImageView) convertView.findViewById(R.id.iv_photo);
-				holder.tvMsg =  (TextView) convertView.findViewById(R.id.tv_msg);
-                holder.btReply = (Button) convertView.findViewById(R.id.bt_reply);
-                holder.btLike = (Button) convertView.findViewById(R.id.bt_like);
-                holder.btFavorite = (Button) convertView.findViewById(R.id.bt_favorite);
-                holder.ivAvatar =  (ImageView) convertView.findViewById(R.id.iv_avatar);
-                holder.tvName =  (TextView) convertView.findViewById(R.id.tv_name);
-                holder.tvAuthor =  (TextView) convertView.findViewById(R.id.tv_author);
-                
-                convertView.setTag(holder);
-			} else {
-				holder = (ViewHolder) convertView.getTag();
-			}
-			    ObjectList item = getItem(position);
-			    utilsPhoto.display(holder.ivPhoto, item.photo.path);
-			    holder.tvMsg.setText(item.msg);
-			    holder.btReply.setText(item.reply_count);
-			    holder.btLike.setText(item.like_count);
-			    holder.btFavorite.setText(item.favorite_count);
-			    utilsAvatar.display(holder.ivAvatar, item.sender.avatar);
-			    holder.tvName.setText(item.album.name);
-			    holder.tvAuthor.setText("by:" + item.sender.username);
-			    
-			return convertView;
-		}
-		
-	}
-
-	static class ViewHolder {
-		public ImageView ivPhoto;
-		public TextView tvMsg;
-		public Button btReply;
-		public Button btLike;
-		public Button btFavorite;
-		public ImageView ivAvatar;
-		public TextView tvName;
-		public TextView tvAuthor;
-	}
-	
 	@Override
-	public void onPageScrolled(int position, float positionOffset,
-			int positionOffsetPixels) {
+	public void onRefresh() {
+		AddItemToContainer(1);
+	}
+
+
+	@Override
+	public void onLoadMore() {
+		AddItemToContainer(2);
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override       
-	public void onPageSelected(int position) {
-		BannerDatas bannerData = mTopData.get(position);
-		tvTitle.setText(bannerData.description);
-	}
-
 	@Override
-	public void onPageScrollStateChanged(int state) {
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void onPageSelected(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
