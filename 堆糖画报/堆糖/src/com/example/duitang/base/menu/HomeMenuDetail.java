@@ -7,8 +7,11 @@ import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -26,7 +29,8 @@ import com.example.duitang.model.BannerData;
 import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
-import com.example.duitang.view.GridViewWithHeaderAndFooter;
+import com.example.duitang.view.RefreshListView;
+import com.example.duitang.view.RefreshListView.OnRefreshListener;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -48,6 +52,8 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	
 	private ArrayList<ObjectList> mObjectListData;
 	
+	private String mMore;// 更多页面的地址
+	
 	private MainData mMainData;
 	@ViewInject(R.id.tv_title)
 	private TextView tvTitle;//轮播标题
@@ -55,8 +61,8 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 	@ViewInject(R.id.indicator)
 	private CirclePageIndicator mIndicator;//轮播位置指示器
 	
-	@ViewInject(R.id.gv_list)
-	private GridViewWithHeaderAndFooter gridView;//列表
+	@ViewInject(R.id.lv_list)
+	private RefreshListView lvList;//列表
 	
 	private Handler mHandler;
 	
@@ -78,9 +84,34 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 		ViewUtils.inject(this,view);
 		ViewUtils.inject(this,headerView);
 		
+		
 		//以头布局的形式加载给listView
-		gridView.addHeaderView(headerView); 
+		lvList.addHeaderView(headerView); 
+//		MotionEvent ev = null;
+//		gridView.onTouchEvent(MotionEvent ev);
+//		Log.i("tag", "Padding:" + String.valueOf((int) ev.getRawY()));
 //		mViewPager.setOnPageChangeListener(this);
+		// 设置下拉刷新监听
+
+		lvList.setOnRefreshListener(new OnRefreshListener() {
+
+			@Override
+			public void onRefresh() {
+				getDataFromServer();
+			}
+
+			@Override
+			public void onLoadMore() {
+				if (mMore!= null) {
+					getMoreDataFromServer();
+				} else {
+					Toast.makeText(mActivity, "最后一页了", Toast.LENGTH_SHORT)
+							.show();
+					lvList.onRefreshComplete(false);// 收起加载更多的布局
+						}
+					}
+				});
+		
 		return view;
 	}
 	
@@ -89,20 +120,94 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 		
 
 //		Log.i("tag", "传递结果:"+ mTopData);
-		mViewPager.setAdapter(new TopNewsAdapter());
-		
-		autoPlay();// 自动轮播条显示
-		
+
 		getDataFromServer();
 		
 	}
 	
-	private void autoPlay() {
-		mIndicator.setViewPager(mViewPager);
-		mIndicator.setSnap(true);// 支持快照显示
-        mIndicator.setOnPageChangeListener(this);
-        mIndicator.onPageSelected(0);// 让指示器重新定位到第一个点
-        
+	/**
+	 * 从服务器获取数据
+	 */
+	private void getDataFromServer() {
+		HttpUtils utils = new HttpUtils();
+		
+		//使用xUtils发送请求
+		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
+
+			@Override
+			public void onSuccess(ResponseInfo<String> responseInfo) {
+				String result = responseInfo.result;
+				
+//				Log.i("tag", "返回结果："+result);
+				parseData(result, false);
+				
+				lvList.onRefreshComplete(true);
+			}
+			@Override
+			public void onFailure(HttpException error, String msg) {
+				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
+				error.printStackTrace();	
+				lvList.onRefreshComplete(false);
+			}
+		});
+	}
+	/**
+	 * 加载下一页数据
+	 */
+	private void getMoreDataFromServer() {
+		HttpUtils utils = new HttpUtils();
+		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
+
+			@Override
+			public void onSuccess(ResponseInfo<String> responseInfo) {
+				String result = (String) responseInfo.result;
+
+				parseData(result, true);
+
+				lvList.onRefreshComplete(true);
+			}
+
+			@Override
+			public void onFailure(HttpException error, String msg) {
+				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
+				error.printStackTrace();
+				lvList.onRefreshComplete(false);
+			}
+		});
+	}
+	/**
+	 * 解析网络数据
+	 * @param result
+	 */
+	private void parseData(String result,boolean isMore) {
+
+		Gson gson = new Gson();
+		mMainData = gson.fromJson(result,MainData.class);
+		// 处理下一页链接
+		String more = mMainData.data.more;
+		if (!TextUtils.isEmpty(more)) {
+			mMore = more;
+		} else {
+			mMore = null;
+		}
+	if (!isMore) {	
+		if (mTopData!= null) {
+			mViewPager.setAdapter(new TopNewsAdapter());
+			mIndicator.setViewPager(mViewPager);
+			mIndicator.setSnap(true);// 支持快照显示
+			mIndicator.setOnPageChangeListener(this);
+
+			mIndicator.onPageSelected(0);// 让指示器重新定位到第一个点
+			tvTitle.setText(mTopData.get(0).description);
+		}
+		
+		mObjectListData = mMainData.data.object_list;		
+		if (mObjectListData != null) {
+			mListAdapter = new ListAdapter();
+			lvList.setAdapter(mListAdapter);
+		}
+//		Log.i("tag", "解析结果:"+ mObjectListData.size());
+		// 自动轮播条显示
 		if (mHandler == null) {
 			mHandler = new Handler() {
 				public void handleMessage(android.os.Message msg) {
@@ -122,50 +227,13 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements OnPageChangeL
 
 			mHandler.sendEmptyMessageDelayed(0, 3000);// 延时3秒后发消息
 		}
+	} else {// 如果是加载下一页,需要将数据追加给原来的集合
+		ArrayList<ObjectList> objectList = mMainData.data.object_list;
+		mObjectListData.addAll(objectList);
+		mListAdapter.notifyDataSetChanged();
 	}
-	
-	/**
-	 * 从服务器获取数据
-	 */
-	private void getDataFromServer() {
-		HttpUtils utils = new HttpUtils();
-		
-		//使用xUtils发送请求
-		utils.send(HttpMethod.GET, NetInterface.MAIN, new RequestCallBack<String>() {
 
-			@Override
-			public void onSuccess(ResponseInfo<String> responseInfo) {
-				String result = responseInfo.result;
-				
-//				Log.i("tag", "返回结果："+result);
-				parseData(result);
-			}
-			@Override
-			public void onFailure(HttpException error, String msg) {
-				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
-				error.printStackTrace();	
-			}
-		});
-	}
-	
-	/**
-	 * 解析网络数据
-	 * @param result
-	 */
-	private void parseData(String result) {
-
-		Gson gson = new Gson();
-		mMainData = gson.fromJson(result,MainData.class);
-		
-		mObjectListData = mMainData.data.object_list;
-
-		if (mObjectListData != null) {
-			mListAdapter = new ListAdapter();
-			gridView.setAdapter(mListAdapter);
-		}
-//		Log.i("tag", "解析结果:"+ mObjectListData.size());
-		
-	}
+}
 	/**
 	 * 头条新闻适配器
 	 * @author Wizen

@@ -15,6 +15,7 @@ public class MainData {
 	public Data data;
 	
 	public class Data {
+		public String more;
 		public ArrayList<ObjectList> object_list;
 	}
 	

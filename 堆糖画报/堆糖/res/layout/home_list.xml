@@ -4,14 +4,12 @@
     android:layout_height="match_parent"
     android:background="#EAEBEC"
     android:orientation="vertical" >
-    <com.example.duitang.view.GridViewWithHeaderAndFooter
-        android:id="@+id/gv_list"
+     <com.example.duitang.view.RefreshListView 
+        android:id="@+id/lv_list"
 	    android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:numColumns="2"
-
         android:cacheColorHint="#fff"
         android:layout_weight="1">
-        ></com.example.duitang.view.GridViewWithHeaderAndFooter>
+        ></com.example.duitang.view.RefreshListView>
 
 </LinearLayout>
