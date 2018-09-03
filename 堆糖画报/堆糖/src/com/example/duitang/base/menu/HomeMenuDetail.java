@@ -46,6 +46,9 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 //	private ArrayList<ObjectList> mObjectListData;
 	private LinkedList<ObjectList> mObjectListData;
 	
+	@ViewInject(R.id.tv_title)
+	private TextView tvTitle;//轮播标题
+	
 	@ViewInject(R.id.list)
 	private XListView xListView;//列表
 	
@@ -381,8 +384,9 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 	}
 
 	@Override
-	public void onPageSelected(int arg0) {
-		// TODO Auto-generated method stub
+	public void onPageSelected(int position) {
+		BannerDatas bannerData = mTopData.get(position);
+		tvTitle.setText(bannerData.description);
 		
 	}
 	
