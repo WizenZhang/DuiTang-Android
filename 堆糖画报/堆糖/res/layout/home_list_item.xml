@@ -31,24 +31,69 @@
         android:background="#fff"
         android:orientation="horizontal" >
         
-        <Button
-        android:id="@+id/bt_reply"
-        style="@style/CommentStyle"
-        android:drawableLeft="@drawable/blog_list_icon_comments"
-        android:padding="5dp"
-        />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            >
+            <ImageView 
+               android:layout_width="15dp"
+               android:layout_height="15dp"
+               android:src="@drawable/blog_list_icon_comments"  
+                />
+            <TextView 
+               android:id="@+id/bt_reply"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="12sp"
+               android:paddingLeft="5dp"
+               android:text="123"
+                />
+        </LinearLayout>
         
-        <Button
-        android:id="@+id/bt_like"
-        style="@style/CommentStyle"
-        android:drawableLeft="@drawable/blog_list_icon_good"
-        />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            >
+            <ImageView 
+               android:layout_width="15dp"
+               android:layout_height="15dp"
+               android:src="@drawable/blog_list_icon_good"  
+                />
+            <TextView 
+               android:id="@+id/bt_like"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="12sp"
+               android:paddingLeft="5dp"
+               android:text="123"
+                />
+        </LinearLayout>
         
-        <Button
-        android:id="@+id/bt_favorite"
-        style="@style/CommentStyle"
-        android:drawableLeft="@drawable/blog_list_icon_star"
-       />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            >
+            <ImageView 
+               android:layout_width="15dp"
+               android:layout_height="15dp"
+               android:src="@drawable/blog_list_icon_star"  
+                />
+            <TextView 
+               android:id="@+id/bt_favorite"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="12sp"
+               android:paddingLeft="5dp"
+               android:text="123"
+                />
+        </LinearLayout>
+        
     </LinearLayout>
     <View 
         android:layout_width="match_parent"

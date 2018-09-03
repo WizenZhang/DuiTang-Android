@@ -10,6 +10,8 @@ import me.maxwin.view.XListView.IXListViewListener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.AsyncTask.Status;
@@ -19,6 +21,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -27,13 +30,17 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import com.dodowaterfall.Helper;
 import com.example.android.bitmapfun.util.ImageFetcher;
+import com.example.duitang.DetailActivity;
 import com.example.duitang.R;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.utils.PrefUtils;
 import com.google.gson.Gson;
+import com.huewu.pla.lib.internal.PLA_AdapterView;
+import com.huewu.pla.lib.internal.PLA_AdapterView.OnItemClickListener;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -202,14 +209,14 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 
 	            if (convertView == null) {
 	                LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
-	                convertView = layoutInflator.inflate(R.layout.list_item, null);
+	                convertView = layoutInflator.inflate(R.layout.home_list_item, null);
 	                
 	                holder = new ViewHolder();
 	                holder.ivPhoto =  (ImageView) convertView.findViewById(R.id.iv_photo);
 					holder.tvMsg =  (TextView) convertView.findViewById(R.id.tv_msg);
-	                holder.btReply = (Button) convertView.findViewById(R.id.bt_reply);
-	                holder.btLike = (Button) convertView.findViewById(R.id.bt_like);
-	                holder.btFavorite = (Button) convertView.findViewById(R.id.bt_favorite);
+	                holder.tvReply = (TextView) convertView.findViewById(R.id.bt_reply);
+	                holder.tvLike = (TextView) convertView.findViewById(R.id.bt_like);
+	                holder.tvFavorite = (TextView) convertView.findViewById(R.id.bt_favorite);
 	                holder.ivAvatar =  (ImageView) convertView.findViewById(R.id.iv_avatar);
 	                holder.tvName =  (TextView) convertView.findViewById(R.id.tv_name);
 	                holder.tvAuthor =  (TextView) convertView.findViewById(R.id.tv_author);
@@ -222,21 +229,36 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 
                     utilsPhoto.display(holder.ivPhoto, item.photo.path);
 	   			    holder.tvMsg.setText(item.msg);
-	   			    holder.btReply.setText(item.reply_count);
-	   			    holder.btLike.setText(item.like_count);
-	   			    holder.btFavorite.setText(item.favorite_count);
+	   			    holder.tvReply.setText(item.reply_count);
+	   			    holder.tvLike.setText(item.like_count);
+	   			    holder.tvFavorite.setText(item.favorite_count);
 	   			    utilsAvatar.display(holder.ivAvatar, item.sender.avatar);
 	   			    holder.tvName.setText(item.album.name);
 	   			    holder.tvAuthor.setText("by:" + item.sender.username);
+	   			    
+	   			 String ids = PrefUtils.getString(mActivity, "read_ids", "");
+		 			if (ids.contains(mObjectListData.get(position).id)) {
+		 				holder.tvMsg.setTextColor(Color.GRAY);
+		 				holder.tvReply.setTextColor(Color.GRAY);
+		 				holder.tvLike.setTextColor(Color.GRAY);
+		 				holder.tvFavorite.setTextColor(Color.GRAY);
+		 				holder.tvName.setTextColor(Color.GRAY);
+		 			}else{
+		 				holder.tvMsg.setTextColor(Color.BLACK);
+		 				holder.tvReply.setTextColor(Color.BLACK);
+		 				holder.tvLike.setTextColor(Color.BLACK);
+		 				holder.tvFavorite.setTextColor(Color.BLACK);
+		 				holder.tvName.setTextColor(Color.BLACK);
+		 			}
 	            return convertView;
 		}
 
         class ViewHolder {
 			public ImageView ivPhoto;
 			public TextView tvMsg;
-			public Button btReply;
-			public Button btLike;
-			public Button btFavorite;
+			public TextView tvReply;
+			public TextView tvLike;
+			public TextView tvFavorite;
 			public ImageView ivAvatar;
 			public TextView tvName;
 			public TextView tvAuthor;
@@ -265,10 +287,57 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 		ViewUtils.inject(this,headerView);
 		
 		//以头布局的形式加载给listView
-		
+		mViewPager.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Log.i("tag", "被点击:" + arg0);
+			}
+		});
 		xListView.addHeaderView(headerView);
-		
+		xListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(PLA_AdapterView<?> parent, View view,
+					int position, long id) {
+//				Log.i("tag", "被点击:" + position);
+				// 在本地记录已读状态2
+				String ids = PrefUtils.getString(mActivity, "read_ids", "");
+				String Id = mObjectListData.get(position).id;
+				if (!ids.contains(Id)) {
+					ids = ids + Id +",";
+					PrefUtils.setString(mActivity, "resd_ids", ids);
+				}
+				
+				// mNewsAdapter.notifyDataSetChanged();
+				changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
+				
+				//跳转新闻详情页
+//				Intent intent = new Intent();
+//				intent.setClass(mActivity, DetailActivity.class);
+//				intent.putExtra("url", mNewsList.get(postion).url);
+				mActivity.startActivity( new Intent(mActivity, DetailActivity.class));
+//				overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+			}
+		});
 		return view;
+	}
+	
+	/**
+	 * 改变已读新闻的颜色
+	 */
+	private void changeReadState(View view) {
+		TextView tvMsg = (TextView) view.findViewById(R.id.tv_msg);
+		TextView tvReply = (TextView) view.findViewById(R.id.bt_reply);
+		TextView tvLike = (TextView) view.findViewById(R.id.bt_like);
+		TextView tvFavorite = (TextView) view.findViewById(R.id.bt_favorite);
+		TextView tvName =  (TextView) view.findViewById(R.id.tv_name);
+		 
+		tvMsg.setTextColor(Color.GRAY);
+		tvReply.setTextColor(Color.GRAY);
+		tvLike.setTextColor(Color.GRAY);
+		tvFavorite.setTextColor(Color.GRAY);
+		tvName.setTextColor(Color.GRAY);
 	}
 	
 	@Override
