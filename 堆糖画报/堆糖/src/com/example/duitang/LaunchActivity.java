@@ -82,7 +82,7 @@ public class LaunchActivity extends Activity {
 
 		// 跳转到主页面
 		startActivity(new Intent(LaunchActivity.this,MainActivity.class));
-	
+		overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
 	    finish();
    }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+    
+    <ImageView 
+        android:id="@+id/iv_d_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/image_default"/>
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView 
+            android:id="@+id/iv_d_avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/image_default"
+            android:layout_centerVertical="true"
+            android:padding="5dp"/>
+        <TextView 
+            android:id="@+id/tv_d_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="·6天前"
+            android:textSize="12sp"
+            android:layout_marginLeft="5dp"
+            android:layout_alignTop="@+id/iv_d_avatar"
+            android:paddingTop="5dp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_toRightOf="@+id/tv_d_username"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/detail" />
+
+        <TextView
+            android:id="@+id/tv_d_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/iv_d_avatar"
+            android:layout_toRightOf="@+id/iv_d_avatar"
+            android:paddingBottom="5dp"
+            android:text="收集到 你听我说" />
+
+        <TextView
+            android:id="@+id/tv_d_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_d_name"
+            android:layout_alignTop="@+id/iv_d_avatar"
+            android:paddingTop="5dp"
+            android:text="by:是新欢"
+            android:textColor="#00f" />
+        
+    </RelativeLayout>
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:background="@android:color/darker_gray"/>
+    <TextView 
+        android:id="@+id/tv_d_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="简介：电影 台词 截图 截屏"
+        android:padding="5dp"/>
+</LinearLayout>
+

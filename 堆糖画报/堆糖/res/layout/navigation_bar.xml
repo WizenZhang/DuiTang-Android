@@ -27,7 +27,7 @@
             android:layout_marginLeft="5dp"
             android:background="@null"
             android:src="@drawable/img_menu" 
-            />
+            />z
     </RelativeLayout>
 
     <FrameLayout 

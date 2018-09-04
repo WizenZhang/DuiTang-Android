@@ -20,8 +20,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -294,6 +296,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 				Log.i("tag", "被点击:" + arg0);
 			}
 		});
+
 		xListView.addHeaderView(headerView);
 		xListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -313,11 +316,12 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 				changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
 				
 				//跳转新闻详情页
-//				Intent intent = new Intent();
-//				intent.setClass(mActivity, DetailActivity.class);
-//				intent.putExtra("url", mNewsList.get(postion).url);
-				mActivity.startActivity( new Intent(mActivity, DetailActivity.class));
-//				overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+				Intent intent = new Intent();
+				intent.setClass(mActivity, DetailActivity.class);
+				intent.putExtra("ID", mObjectListData.get(position).id);
+				mActivity.startActivity(intent);
+				//设置切换动画，从右边进入，左边退出 
+				mActivity.overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
 			}
 		});
 		return view;
@@ -421,6 +425,8 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 			
 			container.addView(image);
 			
+			image.setOnTouchListener(new TopTouchListener());//设置触摸监听
+			
 			return image;
 		}
 		
@@ -429,6 +435,41 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 			container.removeView((View) object);
 		}
 	}
+	
+	/**
+	 * 头条新闻的触摸监听
+	 * 
+	 * @author Kevin
+	 * 
+	 */
+	class TopTouchListener implements OnTouchListener {
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				System.out.println("按下");
+				mHandler.removeCallbacksAndMessages(null);// 删除Handler中的所有消息
+
+				break;
+			case MotionEvent.ACTION_CANCEL:
+				System.out.println("事件取消");
+				mHandler.sendEmptyMessageDelayed(0, 3000);
+				break;
+			case MotionEvent.ACTION_UP:
+				System.out.println("抬起");
+				mHandler.sendEmptyMessageDelayed(0, 3000);
+				break;
+
+			default:
+				break;
+			}
+
+			return true;
+		}
+
+	}
+
 	@Override
 	public void onRefresh() {
 		AddItemToContainer(1);
