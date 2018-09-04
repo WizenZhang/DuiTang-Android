@@ -1,5 +1,6 @@
 package com.example.duitang;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.utils.PrefUtils;
+import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 import com.huewu.pla.lib.internal.PLA_AdapterView.OnItemClickListener;
@@ -29,12 +31,19 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.util.Log;
@@ -47,6 +56,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class UserActivity extends Activity implements OnClickListener,IXListViewListener{
 
@@ -67,8 +77,10 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	private Data data;
 	private TextView tv_name;
 	private TextView tv_count;
-	private ImageView iv_avatar;
+	private RoundImageView iv_avatar;
 	private TextView tv_username;
+	
+	private ImageLoader mImageLoader;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +151,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		
 		tv_name= (TextView) headerView.findViewById(R.id.tv_user_name);
 		tv_count= (TextView) headerView.findViewById(R.id.tv_user_count);
-		iv_avatar= (ImageView) headerView.findViewById(R.id.iv_user_avatar);
+		iv_avatar= (RoundImageView) headerView.findViewById(R.id.iv_user_avatar);
 		tv_username= (TextView) headerView.findViewById(R.id.tv_user_username);
 		
 		if (name == null) {
@@ -147,9 +159,11 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		} else {
 			tv_name.setText(name);
 			tv_count.setText(count + "张图片" + "·" + like_count+"人收藏" );
-			BitmapUtils utils = new BitmapUtils(this);
-			utils.configDefaultLoadingImage(R.drawable.image_default);
-			utils.display(iv_avatar, avatar);
+//			BitmapUtils utils = new BitmapUtils(this);
+//			utils.configDefaultLoadingImage(R.drawable.image_default);
+//			utils.display(iv_avatar, avatar);
+			 mImageLoader = initImageLoader(this, mImageLoader, "test");
+			 mImageLoader.displayImage(avatar,iv_avatar);
 			tv_username.setText("by:" + username);
 		}
 		
@@ -191,9 +205,11 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		if (null != data) {
 			tv_name.setText(data.name);
 			tv_count.setText(data.count + "张图片" + "·" + data.like_count+"人收藏" );
-			BitmapUtils utils = new BitmapUtils(this);
-			utils.configDefaultLoadingImage(R.drawable.image_default);
-			utils.display(iv_avatar, data.user.avatar);
+//			BitmapUtils utils = new BitmapUtils(this);
+//			utils.configDefaultLoadingImage(R.drawable.image_default);
+//			utils.display(iv_avatar, data.user.avatar);
+			mImageLoader = initImageLoader(this, mImageLoader, "test");
+			mImageLoader.displayImage(data.user.avatar,iv_avatar);
 			tv_username.setText("by:" + data.user.username);
 		}
     	
@@ -295,7 +311,9 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 //		    		Log.d("tag", "json:" + mMainData.status);
 		    		if (mMainData.status == 1) {
 		    			duitangs = mMainData.data.object_list;
-					}	
+//					}else{
+//						Toast.makeText(mContext, "该专辑不存在", Toast.LENGTH_SHORT).show();
+					}
             }
             return duitangs;
         }
@@ -444,4 +462,50 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		// TODO Auto-generated method stub
 		
 	}
+	/**
+	 * 初始化图片下载器，图片缓存地址<i>("/Android/data/[app_package_name]/cache/dirName")</i>
+	 */
+	public ImageLoader initImageLoader(Context context,
+			ImageLoader imageLoader, String dirName) {
+		imageLoader = ImageLoader.getInstance();
+		if (imageLoader.isInited()) {
+			// 重新初始化ImageLoader时,需要释放资源.
+			imageLoader.destroy();
+		}
+		imageLoader.init(initImageLoaderConfig(context, dirName));
+		return imageLoader;
+	}
+
+	/**
+	 * 配置图片下载器
+	 * 
+	 * @param dirName
+	 *            文件名
+	 */
+	private ImageLoaderConfiguration initImageLoaderConfig(
+			Context context, String dirName) {
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				context).threadPriority(Thread.NORM_PRIORITY - 2)
+				.threadPoolSize(3).memoryCacheSize(getMemoryCacheSize(context))
+				.denyCacheImageMultipleSizesInMemory()
+				.discCacheFileNameGenerator(new Md5FileNameGenerator())
+				.discCache(new UnlimitedDiscCache(new File(dirName)))
+				.tasksProcessingOrder(QueueProcessingType.LIFO).build();
+		return config;
+	}
+
+	private int getMemoryCacheSize(Context context) {
+		int memoryCacheSize;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
+			int memClass = ((ActivityManager) context
+					.getSystemService(Context.ACTIVITY_SERVICE))
+					.getMemoryClass();
+			memoryCacheSize = (memClass / 8) * 1024 * 1024; // 1/8 of app memory
+															// limit
+		} else {
+			memoryCacheSize = 2 * 1024 * 1024;
+		}
+		return memoryCacheSize;
+	}
+	
 }

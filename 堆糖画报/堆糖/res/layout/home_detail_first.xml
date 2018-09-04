@@ -16,22 +16,22 @@
         android:src="@drawable/image_default"/>
     <RelativeLayout 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView 
+        android:layout_height="50dp">
+        <com.example.duitang.view.RoundImageView
             android:id="@+id/iv_d_avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/image_default"
             android:layout_centerVertical="true"
-            android:padding="5dp"/>
+           />
         <TextView 
             android:id="@+id/tv_d_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:layout_marginLeft="5dp"
-            android:layout_alignTop="@+id/iv_d_avatar"
-            android:paddingTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentTop="true"
+            android:paddingTop="7dp"
             android:textColor="@android:color/darker_gray"
             android:layout_toRightOf="@+id/tv_d_username"/>
         <ImageView
@@ -46,16 +46,17 @@
             android:id="@+id/tv_d_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/iv_d_avatar"
+            android:layout_alignParentBottom="true"
             android:layout_toRightOf="@+id/iv_d_avatar"
-            android:paddingBottom="5dp"/>
+             android:paddingBottom="5dp"
+            android:layout_marginLeft="5dp"/>
 
         <TextView
             android:id="@+id/tv_d_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/tv_d_name"
-            android:layout_alignTop="@+id/iv_d_avatar"
+            android:layout_alignParentTop="@+id/iv_d_avatar"
             android:paddingTop="5dp"
             android:textColor="#00f" />
         

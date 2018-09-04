@@ -1,5 +1,6 @@
 package com.example.duitang;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -10,6 +11,7 @@ import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.model.MainDetailData.Data;
 import com.example.duitang.model.MainDetailData.LikeUser;
+import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -17,11 +19,18 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -52,7 +61,8 @@ public class DetailActivity extends Activity implements OnClickListener{
 	private String detailUrl;
 	private ListView listView;
 	private Data data;
-	
+	private ImageLoader mAvatarLoader;
+	private ImageLoader mLikeLoader;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -90,6 +100,8 @@ public class DetailActivity extends Activity implements OnClickListener{
             mListView = listView;
 			utils = new BitmapUtils(mContext);
         	utils.configDefaultLoadingImage(R.drawable.image_default);
+        	mAvatarLoader = initImageLoader(mContext, mAvatarLoader, "Avatar");
+        	mLikeLoader = initImageLoader(mContext, mLikeLoader, "Like");
 		}
 		@Override
 		public int getCount() {
@@ -117,7 +129,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 			ViewHolderThird holderThird = null;
 			Data item = (Data) getItem(position);
 //			if (convertView == null) {
-				
+			
 				LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
 				switch (position) {
 				case 0:
@@ -126,7 +138,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 					holderFirst.ivPhoto =  (ImageView) convertView.findViewById(R.id.iv_d_photo);
 					holderFirst.tvMsg =  (TextView) convertView.findViewById(R.id.tv_d_msg);
 					holderFirst.tvData = (TextView) convertView.findViewById(R.id.tv_d_data);
-					holderFirst.ivAvatar =  (ImageView) convertView.findViewById(R.id.iv_d_avatar);
+					holderFirst.ivAvatar =  (RoundImageView) convertView.findViewById(R.id.iv_d_avatar);
 					holderFirst.tvName =  (TextView) convertView.findViewById(R.id.tv_d_name);
 					holderFirst.tvUserName =  (TextView) convertView.findViewById(R.id.tv_d_username);
 
@@ -135,7 +147,9 @@ public class DetailActivity extends Activity implements OnClickListener{
 	                utils.display(holderFirst.ivPhoto, item.photo.path);
 	                holderFirst.tvMsg.setText(item.msg);
 	                holderFirst.tvData.setText(item.add_datetime_pretty);
-	                utils.display(holderFirst.ivAvatar, item.sender.avatar);
+//	                utils.display(holderFirst.ivAvatar, item.sender.avatar);
+	                
+	                mAvatarLoader.displayImage(item.sender.avatar,holderFirst.ivAvatar);
 	                holderFirst.tvName.setText(item.album.name);
 	                holderFirst.tvUserName.setText("by:" + item.sender.username);
 	                
@@ -154,9 +168,11 @@ public class DetailActivity extends Activity implements OnClickListener{
 		 	    		for (int i = 0; i < data.top_like_users.size(); i++) {
 		 					View like_user_item = LayoutInflater.from(parent.getContext()).inflate(
 		 							R.layout.like_user_item, null);
-		 					ImageView icon = (ImageView) like_user_item
+		 					RoundImageView icon = (RoundImageView) like_user_item
 		 							.findViewById(R.id.iv_like_user);// 拿个这行的icon 就可以设置图片
-		 					utils.display(icon, data.top_like_users.get(i).avatar);
+//		 					utils.display(icon, data.top_like_users.get(i).avatar);
+		 					
+		 					mLikeLoader.displayImage(data.top_like_users.get(i).avatar,icon);
 		 					like_users.addView(like_user_item);
 		 				}
 					}
@@ -239,7 +255,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 			public ImageView ivPhoto;
 			public TextView tvMsg;
 			public TextView tvData;
-			public ImageView ivAvatar;
+			public RoundImageView ivAvatar;
 			public TextView tvName;
 			public TextView tvUserName;
 		}
@@ -306,6 +322,52 @@ public class DetailActivity extends Activity implements OnClickListener{
 		
 	}
 	
+	/**
+	 * 初始化图片下载器，图片缓存地址<i>("/Android/data/[app_package_name]/cache/dirName")</i>
+	 */
+	public ImageLoader initImageLoader(Context context,
+			ImageLoader imageLoader, String dirName) {
+		imageLoader = ImageLoader.getInstance();
+		if (imageLoader.isInited()) {
+			// 重新初始化ImageLoader时,需要释放资源.
+			imageLoader.destroy();
+		}
+		imageLoader.init(initImageLoaderConfig(context, dirName));
+		return imageLoader;
+	}
+
+	/**
+	 * 配置图片下载器
+	 * 
+	 * @param dirName
+	 *            文件名
+	 */
+	private ImageLoaderConfiguration initImageLoaderConfig(
+			Context context, String dirName) {
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				context).threadPriority(Thread.NORM_PRIORITY - 2)
+				.threadPoolSize(3).memoryCacheSize(getMemoryCacheSize(context))
+				.denyCacheImageMultipleSizesInMemory()
+				.discCacheFileNameGenerator(new Md5FileNameGenerator())
+				.discCache(new UnlimitedDiscCache(new File(dirName)))
+				.tasksProcessingOrder(QueueProcessingType.LIFO).build();
+		return config;
+	}
+
+	private int getMemoryCacheSize(Context context) {
+		int memoryCacheSize;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
+			int memClass = ((ActivityManager) context
+					.getSystemService(Context.ACTIVITY_SERVICE))
+					.getMemoryClass();
+			memoryCacheSize = (memClass / 8) * 1024 * 1024; // 1/8 of app memory
+															// limit
+		} else {
+			memoryCacheSize = 2 * 1024 * 1024;
+		}
+		return memoryCacheSize;
+	}
+	
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -313,4 +375,5 @@ public class DetailActivity extends Activity implements OnClickListener{
 		finish();
 		overridePendingTransition(com.example.duitang.R.anim.slide_left_in,com.example.duitang.R.anim.slide_right_out);
 	}
+	
 }

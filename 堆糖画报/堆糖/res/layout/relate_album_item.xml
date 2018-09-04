@@ -30,10 +30,10 @@
         android:id="@+id/tv_name"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/iv_related_album"
-        android:layout_alignLeft="@+id/iv_related_album"
+        android:layout_alignTop="@+id/tv_first"
+        android:layout_alignLeft="@+id/tv_first"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginTop="80dp"
         android:textColor="#fff"
         android:textSize="12sp" />
 
@@ -41,10 +41,9 @@
         android:id="@+id/tv_username"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/iv_related_album"
-        android:layout_marginBottom="10dp"
-        android:layout_alignLeft="@+id/iv_related_album"
-        android:layout_marginLeft="10dp"
+        android:layout_alignTop="@+id/tv_name"
+        android:layout_marginTop="15dp"
+        android:layout_alignLeft="@+id/tv_name"
         android:textColor="#fff"
         android:textSize="12sp" />
 

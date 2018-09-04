@@ -11,6 +11,9 @@ int attr alpha 0x7f010038
 int attr alwaysDrawnWithCache 0x7f01004f
 int attr animateLayoutChanges 0x7f010049
 int attr animationCache 0x7f01004d
+int attr border_inside_color 0x7f010083
+int attr border_outside_color 0x7f010084
+int attr border_thickness 0x7f010082
 int attr cacheColorHint 0x7f010059
 int attr centered 0x7f010069
 int attr choiceMode 0x7f01005c
@@ -542,3 +545,7 @@ int styleable ViewPagerIndicator_vpiLinePageIndicatorStyle 2
 int styleable ViewPagerIndicator_vpiTabPageIndicatorStyle 4
 int styleable ViewPagerIndicator_vpiTitlePageIndicatorStyle 3
 int styleable ViewPagerIndicator_vpiUnderlinePageIndicatorStyle 5
+int[] styleable roundedimageview { 0x7f010082, 0x7f010083, 0x7f010084 }
+int styleable roundedimageview_border_inside_color 1
+int styleable roundedimageview_border_outside_color 2
+int styleable roundedimageview_border_thickness 0
