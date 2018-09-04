@@ -315,7 +315,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 				// mNewsAdapter.notifyDataSetChanged();
 				changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
 				
-				//跳转新闻详情页
+				//跳转详情页
 				Intent intent = new Intent();
 				intent.setClass(mActivity, DetailActivity.class);
 				intent.putExtra("ID", mObjectListData.get(position).id);

@@ -44,7 +44,7 @@ public class LaunchActivity extends Activity {
 //    	scale.setFillAfter(true);//保持动画状态
     	
     	//渐变动画
-    	AlphaAnimation alpha = new AlphaAnimation(0, 1);
+    	AlphaAnimation alpha = new AlphaAnimation(1, 1);
     	alpha.setDuration(3000);//动画时间
     	alpha.setFillAfter(true);//保持动画状态
     	

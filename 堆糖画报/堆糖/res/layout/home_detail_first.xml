@@ -4,11 +4,15 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical" >
-    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#EAEBEC"/>
     <ImageView 
         android:id="@+id/iv_d_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="fitXY"
         android:src="@drawable/image_default"/>
     <RelativeLayout 
         android:layout_width="match_parent"
@@ -24,7 +28,6 @@
             android:id="@+id/tv_d_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="·6天前"
             android:textSize="12sp"
             android:layout_marginLeft="5dp"
             android:layout_alignTop="@+id/iv_d_avatar"
@@ -45,8 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/iv_d_avatar"
             android:layout_toRightOf="@+id/iv_d_avatar"
-            android:paddingBottom="5dp"
-            android:text="收集到 你听我说" />
+            android:paddingBottom="5dp"/>
 
         <TextView
             android:id="@+id/tv_d_username"
@@ -55,7 +57,6 @@
             android:layout_alignLeft="@+id/tv_d_name"
             android:layout_alignTop="@+id/iv_d_avatar"
             android:paddingTop="5dp"
-            android:text="by:是新欢"
             android:textColor="#00f" />
         
     </RelativeLayout>
@@ -67,7 +68,6 @@
         android:id="@+id/tv_d_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="简介：电影 台词 截图 截屏"
         android:padding="5dp"/>
 </LinearLayout>
 

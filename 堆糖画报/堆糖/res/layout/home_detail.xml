@@ -20,14 +20,16 @@
             android:textSize="18sp"
             
             />
-        <ImageButton 
+        <RadioButton 
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:background="@null"
-            android:src="@drawable/back" 
+            android:layout_marginLeft="10dp"
+            android:text="首页"
+            android:textSize="15sp"
+            android:drawableLeft="@drawable/back"
+            android:button="@null"
             />
         <ImageButton 
             android:id="@+id/btn_share"
@@ -35,10 +37,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingRight="5dp"
+            android:paddingRight="10dp"
             android:background="@null"
             android:src="@drawable/icon_share" 
             />
+
     </RelativeLayout>
     <ListView 
         android:id="@+id/lv_list"
@@ -50,6 +53,7 @@
         android:paddingRight="5dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="5dp"
+        android:scrollbars="none"
         >
       
         </ListView>
