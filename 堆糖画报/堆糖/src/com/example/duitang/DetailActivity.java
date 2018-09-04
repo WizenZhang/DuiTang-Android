@@ -172,7 +172,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 		        	holderThird.tvFavoriteCount.setText(item.favorite_count);
 		        	
 		        	related_albums = (LinearLayout) convertView.findViewById(R.id.ll_related_albums);
-		        	Log.i("tag", "返回结果："+ data.related_albums.get(0).covers.get(0));
+		        	
 		 	    	if (data.related_albums!= null) {
 		 	    		for (int i = 0; i < data.related_albums.size(); i++) {
 		 					View related_album_item = LayoutInflater.from(parent.getContext()).inflate(
@@ -193,26 +193,31 @@ public class DetailActivity extends Activity implements OnClickListener{
 							}
 		 					name.setText(data.related_albums.get(i).name);
 		 					username.setText("by:" + data.related_albums.get(i).user.username);
+		 					
 		 					//设置图片点击监听
-		 					final String id = "https://www.baidu.com/";
-//		 					final String id = data.related_albums.get(i).user.id;
+		 					final String id = data.related_albums.get(i).user.id;
+		 					final String like_count = data.related_albums.get(i).like_count;
+		 					final String up_name = data.related_albums.get(i).name;
+		 					final String count = data.related_albums.get(i).count;
+		 					final String avatar = data.related_albums.get(i).user.avatar;
+		 					final String up_username = data.related_albums.get(i).user.username;
 		 					if (!TextUtils.isEmpty(id)) {
-
 		 						related_album_item.setOnClickListener(new OnClickListener() {// 每个item的点击事件加在这里
 
 		 									@Override
 		 									public void onClick(View v) {
-		 										Uri uri = Uri.parse(id);
-		 										Intent intent = new Intent(Intent.ACTION_VIEW,
-		 												uri);
-		 										startActivity(intent);
 		 										//跳转详情页
-//		 										Intent intent = new Intent();
-//		 										intent.setClass(mContext, UserActivity.class);
-//		 										intent.putExtra("ID", id);
-//		 										parent.getContext().startActivity(intent);
-//		 										//设置切换动画，从右边进入，左边退出 
-//		 										((Activity) parent.getContext()).overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+		 										Intent intent = new Intent();
+		 										intent.setClass(DetailActivity.this, UserActivity.class);
+		 										intent.putExtra("ID", id);
+		 										intent.putExtra("name", up_name);
+		 										intent.putExtra("count", count);
+		 										intent.putExtra("avatar", avatar);
+		 										intent.putExtra("username", up_username);
+		 										intent.putExtra("like_count", like_count);
+		 										startActivity(intent);
+		 										//设置切换动画，从右边进入，左边退出 
+		 										overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
 		 									}
 		 								});
 		 					}

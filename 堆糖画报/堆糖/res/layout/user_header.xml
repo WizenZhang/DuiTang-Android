@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+   <ImageView 
+       android:id="@+id/iv_background"
+       android:layout_width="match_parent"
+       android:layout_height="200dp"
+       android:scaleType="centerInside"
+       android:background="@android:color/darker_gray"/>
+    <TextView
+        android:id="@+id/tv_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="你听我说" />
+     <TextView
+        android:id="@+id/tv_user_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_user_name"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="12sp"
+        android:text="你听我说" />
+     <View 
+        android:layout_width="80dp"
+        android:layout_height="0.7dp"
+        android:layout_below="@+id/tv_user_count"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/darker_gray"/>
+
+     <ImageView
+         android:id="@+id/iv_user_avatar"
+         android:layout_width="70dp"
+         android:layout_height="70dp"
+         android:layout_below="@+id/tv_user_count"
+         android:layout_centerHorizontal="true"
+         android:layout_marginTop="15dp"
+         android:background="@android:color/background_light"
+         android:scaleType="fitXY" />
+    <TextView
+        android:id="@+id/tv_user_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_user_avatar"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="12sp"
+        android:text="你听我说" />
+     
+</RelativeLayout>

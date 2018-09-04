@@ -280,7 +280,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 	
 	@Override
 	public View initViews() {
-		View view = View.inflate(mActivity, R.layout.home_list, null);
+		View view = View.inflate(mActivity, R.layout.home_activity, null);
 
 		//加载头布局
 		View headerView = View.inflate(mActivity, R.layout.home_header, null);

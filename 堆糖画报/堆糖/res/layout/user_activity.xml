@@ -2,8 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00f"
+    android:background="#EAEBEC"
     android:orientation="vertical" >
-    
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:background="@drawable/title_white_bg"
+        >
+        
+        <TextView 
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="专辑"
+            android:textSize="18sp"
+            
+            />
+        <RadioButton 
+            android:id="@+id/btn_user_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="详情"
+            android:textSize="15sp"
+            android:drawableLeft="@drawable/back"
+            android:button="@null"
+            />
+    </RelativeLayout>
+    <me.maxwin.view.XListView
+        android:id="@+id/xlist"
+        android:scrollbars="vertical"
+        android:fastScrollEnabled="true"
+        android:cacheColorHint="#fff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

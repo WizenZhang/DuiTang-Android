@@ -51,6 +51,8 @@ public class MainDetailData {
     	public String avatar;
 	}
     public class Related{
+    	public String count;
+    	public String like_count;
     	public User user;
     	public String name;
     	public ArrayList<?> covers;
