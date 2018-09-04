@@ -34,6 +34,7 @@ import com.dodowaterfall.Helper;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.duitang.DetailActivity;
 import com.example.duitang.R;
+import com.example.duitang.UserActivity;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData.BannerDatas;
@@ -142,7 +143,9 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 		            Gson gson = new Gson();
 		 
 		    		mMainData = gson.fromJson(json,MainData.class);
-		    		duitangs = mMainData.data.object_list;
+		    		if (mMainData.status == 1) {
+		    			duitangs = mMainData.data.object_list;
+					}	
 //		    		Log.d("tag", "json:" + duitangs);
             }
             return duitangs;
@@ -425,8 +428,24 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 			
 			container.addView(image);
 			
-			image.setOnTouchListener(new TopTouchListener());//ÉèÖÃ´¥Ãş¼àÌı
+			String str= bannerData.target;
+			final String newID = str.substring(str.indexOf("id=")+3,str.length());
 			
+//			image.setOnTouchListener(new TopTouchListener());//ÉèÖÃ´¥Ãş¼àÌı
+			image.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+//					   Log.i("tag", "id:" + newID);
+					   //Ìø×ªÏêÇéÒ³
+						Intent intent = new Intent();
+						intent.setClass(mActivity, UserActivity.class);
+						intent.putExtra("ID", newID);
+						mActivity.startActivity(intent);
+						//ÉèÖÃÇĞ»»¶¯»­£¬´ÓÓÒ±ß½øÈë£¬×ó±ßÍË³ö 
+						mActivity.overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+				}
+			});
 			return image;
 		}
 		

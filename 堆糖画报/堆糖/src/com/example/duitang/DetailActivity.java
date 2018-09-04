@@ -305,52 +305,6 @@ public class DetailActivity extends Activity implements OnClickListener{
 		}
 		
 	}
-
-	/**
-	 * HeadView轮播条适配器
-	 * @author Wizen
-	 *
-	 */
-	class LikeAdapter extends PagerAdapter{
-		private Context mContext;
-		private BitmapUtils utils;
-	
-		public LikeAdapter (Context context) {
-			mContext = context;
-			utils = new BitmapUtils(mContext);
-			utils.configDefaultLoadingImage(R.drawable.image_default);
-		}
-		@Override
-		public int getCount() {
-			return data.top_like_users.size();
-		}
-
-		@Override
-		public boolean isViewFromObject(View view, Object object) {
-			return view ==object;
-		}
-		
-		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
-			ImageView image = new ImageView(mContext);
-			image.setImageResource(R.drawable.image_default);
-//			image.setScaleType(ScaleType.FIT_XY);//基于控件大小填充图片
-		
-			LikeUser likeUser = data.top_like_users.get(position);
-			utils.display(image, likeUser.avatar);//传递imageView对象和图片地址
-//			Log.i("tag", "likeUser" + data.top_like_users);
-			container.addView(image);
-			
-//			image.setOnTouchListener(new TopTouchListener());//设置触摸监听
-			
-			return image;
-		}
-		
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			container.removeView((View) object);
-		}
-	}
 	
 	@Override
 	public void onBackPressed() {

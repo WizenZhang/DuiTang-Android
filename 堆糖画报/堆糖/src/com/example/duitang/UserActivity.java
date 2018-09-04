@@ -12,11 +12,15 @@ import com.dodowaterfall.Helper;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.duitang.DetailActivity.ListAdapter;
 import com.example.duitang.global.NetInterface;
+import com.example.duitang.model.BannerDetailData;
+import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.utils.PrefUtils;
 import com.google.gson.Gson;
+import com.huewu.pla.lib.internal.PLA_AdapterView;
+import com.huewu.pla.lib.internal.PLA_AdapterView.OnItemClickListener;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -28,6 +32,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +50,7 @@ import android.widget.TextView;
 
 public class UserActivity extends Activity implements OnClickListener,IXListViewListener{
 
+	private BannerDetailData mBannerDetailData;
 	private RadioButton btnBack;
 	private String userUpUrl;
 	private String userDownUrl;
@@ -58,6 +64,12 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	ContentTask task = new ContentTask(this, 2);
 	private View headerView;
 	
+	private Data data;
+	private TextView tv_name;
+	private TextView tv_count;
+	private ImageView iv_avatar;
+	private TextView tv_username;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -69,22 +81,53 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		xListView = (XListView) findViewById(R.id.xlist);
 		btnBack.setOnClickListener(this);
 			
+		userUpUrl = NetInterface.BANNERDETAILUP + getIntent().getStringExtra("ID");
 		userDownUrl = NetInterface.BANNERDETAILDOWN + getIntent().getStringExtra("ID");
 //		Log.i("tag", "url:" + getIntent().getStringExtra("name"));
+		
+		xListView();
+		initHeadView();
+		
+		AddItemToContainer(2,userDownUrl);	
+		
+	}
+	
+	private void xListView() {
 		xListView.setPullLoadEnable(true);
 		xListView.setXListViewListener(this);
 //      //加载头布局
 		headerView = View.inflate(this, R.layout.user_header, null);
 		ViewUtils.inject(this,headerView);
 		xListView.addHeaderView(headerView);
-		
+		xListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(PLA_AdapterView<?> parent, View view,
+					int position, long id) {
+//				Log.i("tag", "被点击:" + position);
+				// 在本地记录已读状态2
+				String ids = PrefUtils.getString(parent.getContext(), "read_ids", "");
+				String Id = mObjectListData.get(position).id;
+				if (!ids.contains(Id)) {
+					ids = ids + Id +",";
+					PrefUtils.setString(parent.getContext(), "resd_ids", ids);
+				}
+				
+				// mNewsAdapter.notifyDataSetChanged();
+				changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
+				
+				//跳转详情页
+				Intent intent = new Intent();
+				intent.setClass(UserActivity.this, DetailActivity.class);
+				intent.putExtra("ID", mObjectListData.get(position).id);
+				startActivity(intent);
+				//设置切换动画，从右边进入，左边退出 
+				overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+			}
+		});
+
 		mListAdapter = new XListAdapter(this, xListView);
 		xListView.setAdapter(mListAdapter);
-		
-		initHeadView();
-		
-		AddItemToContainer(2,userDownUrl);	
-		
 	}
 	
 	private void initHeadView() {
@@ -94,20 +137,84 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		String avatar= getIntent().getStringExtra("avatar");
 		String username= getIntent().getStringExtra("username");
 		
-		TextView tv_name= (TextView) headerView.findViewById(R.id.tv_user_name);
-		TextView tv_count= (TextView) headerView.findViewById(R.id.tv_user_count);
-		ImageView iv_avatar= (ImageView) headerView.findViewById(R.id.iv_user_avatar);
-		TextView tv_username= (TextView) headerView.findViewById(R.id.tv_user_username);
+		tv_name= (TextView) headerView.findViewById(R.id.tv_user_name);
+		tv_count= (TextView) headerView.findViewById(R.id.tv_user_count);
+		iv_avatar= (ImageView) headerView.findViewById(R.id.iv_user_avatar);
+		tv_username= (TextView) headerView.findViewById(R.id.tv_user_username);
 		
-		tv_name.setText(name);
-		tv_count.setText(count + "张图片" + "·" + like_count+"人收藏" );
-		BitmapUtils utils = new BitmapUtils(this);
-		utils.configDefaultLoadingImage(R.drawable.image_default);
-		utils.display(iv_avatar, avatar);
-		tv_username.setText("by:" + username);
+		if (name == null) {
+			getDataFromServer(userUpUrl);
+		} else {
+			tv_name.setText(name);
+			tv_count.setText(count + "张图片" + "·" + like_count+"人收藏" );
+			BitmapUtils utils = new BitmapUtils(this);
+			utils.configDefaultLoadingImage(R.drawable.image_default);
+			utils.display(iv_avatar, avatar);
+			tv_username.setText("by:" + username);
+		}
+		
 		
 	}
+	/**
+	 * 从服务器获取数据
+	 */
+	private void getDataFromServer(String UpUrl) {
+		HttpUtils utils = new HttpUtils();
+//		Log.i("tag", "url："+UpUrl);
+		utils.send(HttpMethod.GET,UpUrl, new RequestCallBack<String>() {
 
+			@Override
+			public void onSuccess(ResponseInfo<String> responseInfo) {
+				String result = (String) responseInfo.result;
+//				Log.i("tag", "返回结果："+result);
+				 parseData(result);
+			}
+
+			@Override
+			public void onFailure(HttpException error, String msg) {
+				
+				error.printStackTrace();
+				
+			}
+		});
+	}
+	
+	/**
+	 * 解析网络数据
+	 * @param result
+	 */
+	private void parseData(String result) {
+
+		Gson gson = new Gson();
+		mBannerDetailData = gson.fromJson(result,BannerDetailData.class);
+        data = mBannerDetailData.data;
+		if (null != data) {
+			tv_name.setText(data.name);
+			tv_count.setText(data.count + "张图片" + "·" + data.like_count+"人收藏" );
+			BitmapUtils utils = new BitmapUtils(this);
+			utils.configDefaultLoadingImage(R.drawable.image_default);
+			utils.display(iv_avatar, data.user.avatar);
+			tv_username.setText("by:" + data.user.username);
+		}
+    	
+	}
+	
+	/**
+	 * 改变已读新闻的颜色
+	 */
+	private void changeReadState(View view) {
+		TextView tvMsg = (TextView) view.findViewById(R.id.tv_msg);
+		TextView tvReply = (TextView) view.findViewById(R.id.bt_reply);
+		TextView tvLike = (TextView) view.findViewById(R.id.bt_like);
+		TextView tvFavorite = (TextView) view.findViewById(R.id.bt_favorite);
+		TextView tvName =  (TextView) view.findViewById(R.id.tv_name);
+		 
+		tvMsg.setTextColor(Color.GRAY);
+		tvReply.setTextColor(Color.GRAY);
+		tvLike.setTextColor(Color.GRAY);
+		tvFavorite.setTextColor(Color.GRAY);
+		tvName.setTextColor(Color.GRAY);
+	}
 	/**
      * 添加内容
      * 
@@ -117,10 +224,10 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
      */
     private void AddItemToContainer(int type,String url) {
         if (task.getStatus() != Status.RUNNING) {
-//            String url = "http://www.duitang.com/album/1733789/masn/p/" + pageindex + "/24/";
+//            String Url = "http://www.duitang.com/napi/blog/list/by_album/?include_fields=sender%2Calbum%2Cicon_url%2Creply_count%2Clike_count%2Ctop_comments%2Ctop_like_users&platform_version=4.1.2&device_platform=8295&screen_width=540&screen_height=960&start=0&app_version=57&album_id=64054110";
             ContentTask task = new ContentTask(this, type);
 //            Log.i("tag", "url:" + url);
-            task.execute(NetInterface.MAIN);
+            task.execute(url);
         }
     }
     
@@ -185,8 +292,10 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		            Gson gson = new Gson();
 		 
 		    		mMainData = gson.fromJson(json,MainData.class);
-		    		duitangs = mMainData.data.object_list;
-		    		Log.d("tag", "json:" + duitangs);
+//		    		Log.d("tag", "json:" + mMainData.status);
+		    		if (mMainData.status == 1) {
+		    			duitangs = mMainData.data.object_list;
+					}	
             }
             return duitangs;
         }
@@ -254,7 +363,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 					holder = (ViewHolder) convertView.getTag();
 				}
                    ObjectList item = mObjectListData.get(position);
-
+       
                     utilsPhoto.display(holder.ivPhoto, item.photo.path);
 	   			    holder.tvMsg.setText(item.msg);
 	   			    holder.tvReply.setText(item.reply_count);
