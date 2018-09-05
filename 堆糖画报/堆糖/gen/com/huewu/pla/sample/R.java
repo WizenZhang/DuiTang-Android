@@ -112,7 +112,7 @@ public final class R {
 		public static final int empty_photo = 0x7f02000f;
 		public static final int ic_launcher = 0x7f020010;
 		public static final int news_item_bg = 0x7f020017;
-		public static final int xlistview_arrow = 0x7f020029;
+		public static final int xlistview_arrow = 0x7f020059;
 	}
 	public static final class id {
 		public static final int afterDescendants = 0x7f050027;

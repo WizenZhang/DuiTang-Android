@@ -254,7 +254,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
         if (task.getStatus() != Status.RUNNING) {
         	String userDownUrl = NetInterface.BANNERDETAILDOWN + pageindex + "&app_version=57&album_id=" + getIntent().getStringExtra("ID");
             ContentTask task = new ContentTask(this, type);
-//            Log.i("tag", "url:" + url);
+//            Log.i("tag", "url:" + userDownUrl);
             task.execute(userDownUrl);
         }
     }

@@ -164,7 +164,8 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
         if (task.getStatus() != Status.RUNNING) {
             String url = NetInterface.MAIN + pageindex;
             ContentTask task = new ContentTask(mActivity, type);
-            task.execute(NetInterface.MAIN);
+//            Log.i("tag", "url:" + url);
+            task.execute(url);
 
         }
     }
