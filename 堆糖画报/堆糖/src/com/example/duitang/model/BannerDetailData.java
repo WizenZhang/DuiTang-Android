@@ -1,5 +1,7 @@
 package com.example.duitang.model;
 
+import java.util.ArrayList;
+
 public class BannerDetailData {
 	public Data data;
 	public class Data {
@@ -7,6 +9,7 @@ public class BannerDetailData {
 		public String count;
 		public String like_count;
 		public User user;
+		public ArrayList<?> covers;
 	}
 	public class User{
     	public String avatar;

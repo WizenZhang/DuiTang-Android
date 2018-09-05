@@ -43,6 +43,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -141,7 +142,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 					holderFirst.ivAvatar =  (RoundImageView) convertView.findViewById(R.id.iv_d_avatar);
 					holderFirst.tvName =  (TextView) convertView.findViewById(R.id.tv_d_name);
 					holderFirst.tvUserName =  (TextView) convertView.findViewById(R.id.tv_d_username);
-
+                    holderFirst.btDetail = (Button) convertView.findViewById(R.id.bt_detail);
 					convertView.setTag(holderFirst);
 	                
 	                utils.display(holderFirst.ivPhoto, item.photo.path);
@@ -150,20 +151,42 @@ public class DetailActivity extends Activity implements OnClickListener{
 //	                utils.display(holderFirst.ivAvatar, item.sender.avatar);
 	                
 	                mAvatarLoader.displayImage(item.sender.avatar,holderFirst.ivAvatar);
-	                holderFirst.tvName.setText(item.album.name);
-	                holderFirst.tvUserName.setText("by:" + item.sender.username);
-	                
+	                holderFirst.tvName.setText("收藏到 " + item.album.name);
+	                holderFirst.tvUserName.setText(item.sender.username);
+	                holderFirst.btDetail.setOnClickListener(new OnClickListener() {
+					
+                	//设置图片点击监听
+ 					final String id_detail = data.album.id;
+						@Override
+						public void onClick(View arg0) {
+//							Log.i("tag", "点击了btDetail");
+							//跳转详情页
+								Intent intent = new Intent();
+								intent.setClass(DetailActivity.this, UserActivity.class);
+								intent.putExtra("ID", id_detail);
+								startActivity(intent);
+								//设置切换动画，从右边进入，左边退出 
+								overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);			
+						}
+					});
 					break;
 		        case 1:
 		        	convertView = layoutInflator.inflate(R.layout.home_detail_second, null);
 		        	holderSecond = new ViewHolderSecond();
 		        	holderSecond.tvLikeCount =  (TextView) convertView.findViewById(R.id.tv_like_count);
+		        	holderSecond.btCollection = (Button) convertView.findViewById(R.id.bt_collection);
 		        	convertView.setTag(holderSecond);
 		        	
 		        	holderSecond.tvLikeCount.setText("赞  " + item.top_like_users.size());
 		        	
 		        	like_users = (LinearLayout) convertView.findViewById(R.id.ll_like_users);
-		        	
+		        	holderSecond.btCollection.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View arg0) {
+							Log.i("tag", "btCollection");
+						}
+					});
 		 	    	if (data.top_like_users!= null) {
 		 	    		for (int i = 0; i < data.top_like_users.size(); i++) {
 		 					View like_user_item = LayoutInflater.from(parent.getContext()).inflate(
@@ -211,12 +234,8 @@ public class DetailActivity extends Activity implements OnClickListener{
 		 					username.setText("by:" + data.related_albums.get(i).user.username);
 		 					
 		 					//设置图片点击监听
-		 					final String id = data.related_albums.get(i).user.id;
-		 					final String like_count = data.related_albums.get(i).like_count;
-		 					final String up_name = data.related_albums.get(i).name;
-		 					final String count = data.related_albums.get(i).count;
-		 					final String avatar = data.related_albums.get(i).user.avatar;
-		 					final String up_username = data.related_albums.get(i).user.username;
+		 					final String id = data.related_albums.get(i).id;
+		 					
 		 					if (!TextUtils.isEmpty(id)) {
 		 						related_album_item.setOnClickListener(new OnClickListener() {// 每个item的点击事件加在这里
 
@@ -226,11 +245,6 @@ public class DetailActivity extends Activity implements OnClickListener{
 		 										Intent intent = new Intent();
 		 										intent.setClass(DetailActivity.this, UserActivity.class);
 		 										intent.putExtra("ID", id);
-		 										intent.putExtra("name", up_name);
-		 										intent.putExtra("count", count);
-		 										intent.putExtra("avatar", avatar);
-		 										intent.putExtra("username", up_username);
-		 										intent.putExtra("like_count", like_count);
 		 										startActivity(intent);
 		 										//设置切换动画，从右边进入，左边退出 
 		 										overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
@@ -258,9 +272,11 @@ public class DetailActivity extends Activity implements OnClickListener{
 			public RoundImageView ivAvatar;
 			public TextView tvName;
 			public TextView tvUserName;
+			public Button btDetail;
 		}
 	 class ViewHolderSecond {
 			public TextView tvLikeCount;
+			public Button btCollection;
 		}
 	 class ViewHolderThird {
 			public TextView tvFavoriteCount;

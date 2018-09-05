@@ -10,9 +10,10 @@
         android:background="#EAEBEC"/>
     <ImageView 
         android:id="@+id/iv_d_photo"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:src="@drawable/image_default"/>
     <RelativeLayout 
         android:layout_width="match_parent"
@@ -21,6 +22,7 @@
             android:id="@+id/iv_d_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
             android:src="@drawable/image_default"
             android:layout_centerVertical="true"
            />
@@ -34,13 +36,14 @@
             android:paddingTop="7dp"
             android:textColor="@android:color/darker_gray"
             android:layout_toRightOf="@+id/tv_d_username"/>
-        <ImageView
+        <Button
+            android:id="@+id/bt_detail"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/detail" />
+            android:background="@drawable/detail" />
 
         <TextView
             android:id="@+id/tv_d_name"

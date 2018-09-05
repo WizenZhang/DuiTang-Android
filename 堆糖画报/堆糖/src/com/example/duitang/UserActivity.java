@@ -79,9 +79,10 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	private TextView tv_count;
 	private RoundImageView iv_avatar;
 	private TextView tv_username;
+	private ImageView iv_background;
 	
 	private ImageLoader mImageLoader;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -116,6 +117,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 			@Override
 			public void onItemClick(PLA_AdapterView<?> parent, View view,
 					int position, long id) {
+				if (position > -1) {
 //				Log.i("tag", "被点击:" + position);
 				// 在本地记录已读状态2
 				String ids = PrefUtils.getString(parent.getContext(), "read_ids", "");
@@ -135,6 +137,8 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 				startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
 				overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+			
+				}
 			}
 		});
 
@@ -142,32 +146,13 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		xListView.setAdapter(mListAdapter);
 	}
 	
-	private void initHeadView() {
-		String name= getIntent().getStringExtra("name");
-		String count= getIntent().getStringExtra("count");
-		String like_count= getIntent().getStringExtra("like_count");
-		String avatar= getIntent().getStringExtra("avatar");
-		String username= getIntent().getStringExtra("username");
-		
-		tv_name= (TextView) headerView.findViewById(R.id.tv_user_name);
-		tv_count= (TextView) headerView.findViewById(R.id.tv_user_count);
-		iv_avatar= (RoundImageView) headerView.findViewById(R.id.iv_user_avatar);
-		tv_username= (TextView) headerView.findViewById(R.id.tv_user_username);
-		
-		if (name == null) {
-			getDataFromServer(userUpUrl);
-		} else {
-			tv_name.setText(name);
-			tv_count.setText(count + "张图片" + "·" + like_count+"人收藏" );
-//			BitmapUtils utils = new BitmapUtils(this);
-//			utils.configDefaultLoadingImage(R.drawable.image_default);
-//			utils.display(iv_avatar, avatar);
-			 mImageLoader = initImageLoader(this, mImageLoader, "test");
-			 mImageLoader.displayImage(avatar,iv_avatar);
-			tv_username.setText("by:" + username);
-		}
-		
-		
+	private void initHeadView() {	
+		tv_name = (TextView) headerView.findViewById(R.id.tv_user_name);
+		tv_count = (TextView) headerView.findViewById(R.id.tv_user_count);
+		iv_avatar = (RoundImageView) headerView.findViewById(R.id.iv_user_avatar);
+		tv_username = (TextView) headerView.findViewById(R.id.tv_user_username);
+		iv_background = (ImageView) headerView.findViewById(R.id.iv_background);
+		getDataFromServer(userUpUrl);	
 	}
 	/**
 	 * 从服务器获取数据
@@ -208,9 +193,11 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 //			BitmapUtils utils = new BitmapUtils(this);
 //			utils.configDefaultLoadingImage(R.drawable.image_default);
 //			utils.display(iv_avatar, data.user.avatar);
-			mImageLoader = initImageLoader(this, mImageLoader, "test");
+			mImageLoader = initImageLoader(this, mImageLoader, "ImageLoader");
 			mImageLoader.displayImage(data.user.avatar,iv_avatar);
 			tv_username.setText("by:" + data.user.username);
+		    BitmapUtils utils = new BitmapUtils(this);
+			utils.display(iv_background,(String)data.covers.get(0));
 		}
     	
 	}
@@ -306,9 +293,8 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
             //解析网络数据
             if (null != json) {
 		            Gson gson = new Gson();
-		 
 		    		mMainData = gson.fromJson(json,MainData.class);
-//		    		Log.d("tag", "json:" + mMainData.status);
+//		    		Log.d("tag", "json:" + mMainData.data.object_list.get(0).photo.path);
 		    		if (mMainData.status == 1) {
 		    			duitangs = mMainData.data.object_list;
 //					}else{
@@ -339,6 +325,12 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
 		    utilsAvatar= new BitmapUtils(mContext);
 		    utilsAvatar.configDefaultLoadingImage(R.drawable.image_default);
+//		    BitmapUtils utils = new BitmapUtils(mContext);
+//			utils.configDefaultLoadingImage(R.drawable.image_default);
+//			
+//			utils.display(iv_background,mObjectListData.get(0).photo.path);
+//    		mBgImageLoader = initImageLoader(mContext, mBgImageLoader, "BgImageLoader");
+//    		mBgImageLoader.displayImage(mMainData.data.object_list.get(0).photo.path,iv_background);
         }
 		@Override
 		public int getCount() {

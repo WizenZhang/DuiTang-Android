@@ -46,11 +46,16 @@ public class MainDetailData {
 	}
     public class Album {
     	public String name;
+    	public String id;
+    	public String like_count;
+    	public String count;
+    	public ArrayList<?> covers;
 	}
     public class LikeUser{
     	public String avatar;
 	}
     public class Related{
+    	public String id;
     	public String count;
     	public String like_count;
     	public User user;

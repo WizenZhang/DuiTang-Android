@@ -8,9 +8,10 @@
 
     <ImageView
         android:id="@+id/iv_photo"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:src="@drawable/image_default" />
 
     <TextView
