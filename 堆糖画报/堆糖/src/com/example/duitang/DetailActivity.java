@@ -67,6 +67,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 	private Data data;
 	private ImageLoader mAvatarLoader;
 	private ImageLoader mLikeLoader;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

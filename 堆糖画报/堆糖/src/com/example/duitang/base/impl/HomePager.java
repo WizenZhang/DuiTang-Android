@@ -9,6 +9,7 @@ import com.example.duitang.base.menu.HomeMenuDetail;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData;
 import com.example.duitang.model.BannerData.BannerDatas;
+import com.example.duitang.utils.CacheUtils;
 import com.google.gson.Gson;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -21,6 +22,7 @@ import android.R.string;
 import android.app.Activity;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -56,6 +58,12 @@ public class HomePager extends BasePager {
 //		
 //		//向FrameLayout中动态添加布局
 //		flContent.addView(text);
+		String cache = CacheUtils.getCache(NetInterface.BANNER,
+				mActivity);
+		if (!TextUtils.isEmpty(cache)) {// 如果缓存存在,直接解析数据, 无需访问网路
+//			Log.i("tag", "缓存结果:"+cache);
+			parseData(cache);
+		}
 		getDataFromServer();
 	}
 	
@@ -74,6 +82,9 @@ public class HomePager extends BasePager {
 				
 //				Log.i("tag", "返回结果："+result);
 				parseData(result);
+				// 设置缓存
+				CacheUtils.setCache(NetInterface.BANNER,
+						result, mActivity);
 			}
 
 			

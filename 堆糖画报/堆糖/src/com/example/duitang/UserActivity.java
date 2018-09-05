@@ -471,15 +471,23 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	@Override
 	public void onRefresh() {
 		
-		AddItemToContainer(1,++currentPage);
+		AddItemToContainer(1,0);
 		
 	}
 
 	@Override
 	public void onLoadMore() {
-		AddItemToContainer(2,++currentPage);
-		
+		if (mMainData.status == 1) {
+			if (currentPage <mMainData.data.total) {
+				AddItemToContainer(2,currentPage+=24);
+			}else{
+				Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		}	
 	}
+		
+
 	/**
 	 * 初始化图片下载器，图片缓存地址<i>("/Android/data/[app_package_name]/cache/dirName")</i>
 	 */

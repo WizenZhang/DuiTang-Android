@@ -18,6 +18,7 @@ public class MainData {
 	public class Data {
 		public String more;
 		public LinkedList<ObjectList> object_list;
+		public long total;
 	}
 	
 	public class ObjectList {
