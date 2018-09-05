@@ -18,6 +18,7 @@ import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.utils.FastBlurUtil;
 import com.example.duitang.utils.PrefUtils;
 import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
@@ -41,10 +42,13 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,12 +67,12 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	private BannerDetailData mBannerDetailData;
 	private RadioButton btnBack;
 	private String userUpUrl;
-	private String userDownUrl;
+
 	private MainData mMainData;
 	private XListView xListView;//列表
 	private LinkedList<ObjectList> mObjectListData;
     private XListAdapter mListAdapter;
-	
+    private int currentPage = 0;
 	private ImageFetcher mImagesFetcher;
 
 	ContentTask task = new ContentTask(this, 2);
@@ -83,6 +87,12 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	
 	private ImageLoader mImageLoader;
 
+	Handler handler = new Handler(){
+    	//此方法在主线程中调用，可以用来刷新UI
+    	public void handleMessage(android.os.Message msg) {
+    		iv_background.setImageBitmap((Bitmap)msg.obj);
+    	};
+    };
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -95,13 +105,13 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		btnBack.setOnClickListener(this);
 			
 		userUpUrl = NetInterface.BANNERDETAILUP + getIntent().getStringExtra("ID");
-		userDownUrl = NetInterface.BANNERDETAILDOWN + getIntent().getStringExtra("ID");
+		
 //		Log.i("tag", "url:" + getIntent().getStringExtra("name"));
 		
 		xListView();
 		initHeadView();
 		
-		AddItemToContainer(2,userDownUrl);	
+		AddItemToContainer(2,0);	
 		
 	}
 	
@@ -196,8 +206,23 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 			mImageLoader = initImageLoader(this, mImageLoader, "ImageLoader");
 			mImageLoader.displayImage(data.user.avatar,iv_avatar);
 			tv_username.setText("by:" + data.user.username);
-		    BitmapUtils utils = new BitmapUtils(this);
-			utils.display(iv_background,(String)data.covers.get(0));
+			
+//		    BitmapUtils utils = new BitmapUtils(this);
+//			utils.display(iv_background,(String)data.covers.get(0));
+			//模糊图片
+			Thread t = new Thread(){
+            	@Override
+            	public void run() {
+            	Bitmap blurBitmap = FastBlurUtil.GetUrlBitmap((String)data.covers.get(0), 10);
+            	
+            	Message msg = new Message();
+            	//消息对象可以携带数据
+            	msg.obj = blurBitmap;
+            	//把消息发送至主线程的消息队列
+            	handler.sendMessage(msg);
+            	}
+            };
+            t.start();
 		}
     	
 	}
@@ -225,12 +250,12 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
      * @param type
      * 1为下拉刷新 2为加载更多
      */
-    private void AddItemToContainer(int type,String url) {
+    private void AddItemToContainer(int type,int pageindex) {
         if (task.getStatus() != Status.RUNNING) {
-//            String Url = "http://www.duitang.com/napi/blog/list/by_album/?include_fields=sender%2Calbum%2Cicon_url%2Creply_count%2Clike_count%2Ctop_comments%2Ctop_like_users&platform_version=4.1.2&device_platform=8295&screen_width=540&screen_height=960&start=0&app_version=57&album_id=64054110";
+        	String userDownUrl = NetInterface.BANNERDETAILDOWN + pageindex + "&app_version=57&album_id=" + getIntent().getStringExtra("ID");
             ContentTask task = new ContentTask(this, type);
 //            Log.i("tag", "url:" + url);
-            task.execute(url);
+            task.execute(userDownUrl);
         }
     }
     
@@ -445,13 +470,14 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 
 	@Override
 	public void onRefresh() {
-		// TODO Auto-generated method stub
+		
+		AddItemToContainer(1,++currentPage);
 		
 	}
 
 	@Override
 	public void onLoadMore() {
-		// TODO Auto-generated method stub
+		AddItemToContainer(2,++currentPage);
 		
 	}
 	/**

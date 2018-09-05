@@ -71,7 +71,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 	private Handler mHandler;
 	
 	private XListAdapter mListAdapter;
-	
+	private int currentPage = 0;
 	private ImageFetcher mImagesFetcher;
 
 	ContentTask task = new ContentTask(mActivity, 2);
@@ -160,9 +160,9 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
      * @param type
      * 1为下拉刷新 2为加载更多
      */
-    private void AddItemToContainer(int type) {
+    private void AddItemToContainer(int type,int pageindex) {
         if (task.getStatus() != Status.RUNNING) {
-//            String url = "http://www.duitang.com/album/1733789/masn/p/" + pageindex + "/24/";
+            String url = NetInterface.MAIN + pageindex;
             ContentTask task = new ContentTask(mActivity, type);
             task.execute(NetInterface.MAIN);
 
@@ -370,7 +370,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
  		    autoPlay();// 自动轮播条显示
  		}
         
-        AddItemToContainer(2);
+        AddItemToContainer(2,0);
 	}
 
 	private void autoPlay() {
@@ -491,13 +491,13 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 
 	@Override
 	public void onRefresh() {
-		AddItemToContainer(1);
+		AddItemToContainer(1,++currentPage);
 	}
 
 
 	@Override
 	public void onLoadMore() {
-		AddItemToContainer(2);
+		AddItemToContainer(2,++currentPage);
 	}
 
 	@Override
