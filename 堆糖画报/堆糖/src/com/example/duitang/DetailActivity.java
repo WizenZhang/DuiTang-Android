@@ -14,6 +14,7 @@ import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.model.MainDetailData.Data;
 import com.example.duitang.model.MainDetailData.LikeUser;
+import com.example.duitang.utils.CacheUtils;
 import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
@@ -295,7 +296,11 @@ public class DetailActivity extends Activity implements OnClickListener{
 			@Override
 			public void onSuccess(ResponseInfo<String> responseInfo) {
 				String result = (String) responseInfo.result;
+				// 设置缓存
+//				CacheUtils.setCache(NetInterface.BANNER,
+//						result, mActivity);
 //				Log.i("tag", "返回结果："+result);
+				
 				 parseData(result);
 			}
 

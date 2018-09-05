@@ -1,14 +1,6 @@
 package com.example.duitang.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-
-import com.example.duitang.model.BannerData.BannerDatas;
-import com.example.duitang.model.MainData.Album;
-import com.example.duitang.model.MainData.Data;
-import com.example.duitang.model.MainData.ObjectList;
-import com.example.duitang.model.MainData.Photo;
-import com.example.duitang.model.MainData.Sender;
 
 /**
  * 主页面下部瀑布流详情接口

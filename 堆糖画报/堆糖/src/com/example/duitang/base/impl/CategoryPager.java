@@ -2,7 +2,9 @@ package com.example.duitang.base.impl;
 
 import java.util.ArrayList;
 
+import com.example.duitang.CategoryActivity;
 import com.example.duitang.R;
+import com.example.duitang.UserActivity;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.base.BasePager;
 import com.example.duitang.base.menu.HomeMenuDetail;
@@ -24,6 +26,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -33,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -149,11 +153,15 @@ public class CategoryPager extends BasePager{
 			    holder.iv_name12 = (ImageView) convertView.findViewById(R.id.iv_name12);
 			    holder.iv_name21 = (ImageView) convertView.findViewById(R.id.iv_name21);
 			    holder.iv_name22 = (ImageView) convertView.findViewById(R.id.iv_name22);
+			    holder.ll_11 = (LinearLayout) convertView.findViewById(R.id.ll_11);
+			    holder.ll_12 = (LinearLayout) convertView.findViewById(R.id.ll_12);
+			    holder.ll_21 = (LinearLayout) convertView.findViewById(R.id.ll_21);
+			    holder.ll_22 = (LinearLayout) convertView.findViewById(R.id.ll_22);
 			    convertView.setTag(holder);
 			}else{
 				holder = (ViewHolder) convertView.getTag();
 			}
-			Datas item = mCategoryData.data.get(position+1);
+			final Datas item = mCategoryData.data.get(position+1);
 			holder.tv_group_name.setText(item.group_name);
 			holder.tv_name11.setText(item.group_items.get(0).name);
 			holder.tv_name12.setText(item.group_items.get(1).name);
@@ -193,46 +201,41 @@ public class CategoryPager extends BasePager{
 			default:
 				break;
 			}
-			
-			holder.tv_name11.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					
-					Log.i("tag", "点击了"+ position +v.getTag());
-					
-				}
-			});
-            holder.tv_name12.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					
-					Log.i("tag", "点击了"+ position +v.getTag());
-					
-				}
-			});
-            holder.tv_name21.setOnClickListener(new OnClickListener() {
-	
-	             @Override
-	             public void onClick(View v) {
-		
-		         Log.i("tag", "点击了"+ position +v.getTag());
-		
-				}
-			});
-			holder.tv_name22.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					
-					Log.i("tag", "点击了"+ position +v.getTag());
-					
-				}
-			});
+			//设置监听方法
+			setOnClick(holder.ll_11,item);
+			setOnClick(holder.ll_12,item);
+			setOnClick(holder.ll_21,item);
+			setOnClick(holder.ll_22,item);
 			return convertView;
 		}
 		
+	}
+	public void setOnClick(LinearLayout ll,final Datas item) {
+		ll.setOnClickListener(new OnClickListener() {		
+			@Override
+			public void onClick(View v) {		
+				final String Key = getKey(v,item);
+				final String Name = getName(v,item);
+//				Log.i("tag", "点击了"+ Key);		
+				//跳转详情页
+				Intent intent = new Intent();
+				intent.setClass(mActivity, CategoryActivity.class);
+				intent.putExtra("Name", Name);
+				intent.putExtra("Key", Key);
+				mActivity.startActivity(intent);
+				//设置切换动画，从右边进入，左边退出 
+				mActivity.overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+			}
+		});
+	}
+	public String getKey(View v,Datas item) {
+		int tag =Integer.valueOf(v.getTag().toString());
+		String str= item.group_items.get(tag).target;
+		return str.substring(str.indexOf("id=")+3,str.length());	
+	}
+	public String getName(View v,Datas item) {
+		int tag =Integer.valueOf(v.getTag().toString());
+		return item.group_items.get(tag).name;	
 	}
 	static class ViewHolder{
 		public TextView tv_group_name;
@@ -244,6 +247,10 @@ public class CategoryPager extends BasePager{
 		public ImageView iv_name12;
 		public ImageView iv_name21;
 		public ImageView iv_name22;
+		public LinearLayout ll_11;
+		public LinearLayout ll_12;
+		public LinearLayout ll_21;
+		public LinearLayout ll_22;
 		
 		}
 

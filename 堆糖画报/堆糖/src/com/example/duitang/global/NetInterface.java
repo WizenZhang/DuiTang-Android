@@ -19,5 +19,8 @@ public class NetInterface {
 	public static final String BANNERDETAILDOWN = "http://www.duitang.com/napi/blog/list/by_album/?include_fields=sender%2Calbum%2Cicon_url%2Creply_count%2Clike_count%2Ctop_comments%2Ctop_like_users&platform_version=4.1.2&device_platform=8295&screen_width=540&screen_height=960&start=";
 	//分类页面接口
 	public static final String CATEGORY = "http://www.duitang.com/napi/index/groups/?platform_version=4.1.2&device_platform=8295&screen_width=540&screen_height=960&app_version=57&platform_name=Android&locale=zh&app_code=nayutas";
-   
+    //分类页面详情接口
+	public static final String CATEGORYDETAIL = "http://www.duitang.com/napi/blog/list/by_category/?include_fields=sender%2Calbum%2Cicon_url%2Creply_count%2Clike_count&platform_version=4.2.2&path=&device_platform=YUSUN%2BLA2-W&__dtac=%257B%2522_r%2522%253A%2520%2522316784%2522%257D&screen_width=720&screen_height=1280&app_version=57&start=";
+    ///分类页面详情上部接口
+	public static final String CATEGORYDETAILUP = "http://www.duitang.com/napi/category/detail/?category_id=";
 }

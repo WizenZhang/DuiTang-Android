@@ -1,9 +1,9 @@
 package com.example.duitang.model;
 
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 
-import com.example.duitang.model.BannerData.BannerDatas;
+
 
 /**
  * 主页面下部瀑布流接口
@@ -16,7 +16,7 @@ public class MainData {
 	public Data data;
 	
 	public class Data {
-		public String more;
+		public int more;
 		public LinkedList<ObjectList> object_list;
 		public long total;
 	}
