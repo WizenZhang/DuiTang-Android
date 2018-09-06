@@ -79,6 +79,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 		btnBack = (RadioButton) findViewById(R.id.btn_back);
 		btnShare = (ImageButton) findViewById(R.id.btn_share);
 		listView = (ListView) findViewById(R.id.lv_list);
+		btnBack.setText(getIntent().getStringExtra("Back"));
 		
 		
 		btnBack.setOnClickListener(this);
@@ -169,6 +170,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 								Intent intent = new Intent();
 								intent.setClass(DetailActivity.this, UserActivity.class);
 								intent.putExtra("ID", id_detail);
+								intent.putExtra("Back","详情");
 								startActivity(intent);
 								//设置切换动画，从右边进入，左边退出 
 								overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);			
@@ -249,6 +251,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 		 										//跳转详情页
 		 										Intent intent = new Intent();
 		 										intent.setClass(DetailActivity.this, UserActivity.class);
+		 										intent.putExtra("Back","详情");
 		 										intent.putExtra("ID", id);
 		 										startActivity(intent);
 		 										//设置切换动画，从右边进入，左边退出 

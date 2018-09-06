@@ -7,12 +7,12 @@ public class CategoryDetail {
 	public int status;
 	public Data data;
 	public class Data {
-		public int more;
+		public String name;
 		public ArrayList<Sub_Cates> sub_cates;
-		public long total;	
+		
 	}
 	public class Sub_Cates {
 		public String name;
-		public String path;
+		public String theme_name;
 	}
 }

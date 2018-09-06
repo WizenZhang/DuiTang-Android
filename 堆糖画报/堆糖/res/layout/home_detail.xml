@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:text="首页"
             android:textSize="15sp"
             android:drawableLeft="@drawable/back"
             android:button="@null"

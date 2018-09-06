@@ -93,6 +93,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
     		iv_background.setImageBitmap((Bitmap)msg.obj);
     	};
     };
+	private TextView tvTitle;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -103,7 +104,9 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		btnBack = (RadioButton) findViewById(R.id.btn_user_back);
 		xListView = (XListView) findViewById(R.id.xlist);
 		btnBack.setOnClickListener(this);
-			
+		btnBack.setText(getIntent().getStringExtra("Back"));
+		tvTitle =(TextView)findViewById(R.id.tv_title);	
+		
 		userUpUrl = NetInterface.BANNERDETAILUP + getIntent().getStringExtra("ID");
 		
 //		Log.i("tag", "url:" + getIntent().getStringExtra("name"));
@@ -134,7 +137,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 				String Id = mObjectListData.get(position).id;
 				if (!ids.contains(Id)) {
 					ids = ids + Id +",";
-					PrefUtils.setString(parent.getContext(), "resd_ids", ids);
+					PrefUtils.setString(parent.getContext(), "read_ids", ids);
 				}
 				
 				// mNewsAdapter.notifyDataSetChanged();
@@ -144,6 +147,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 				Intent intent = new Intent();
 				intent.setClass(UserActivity.this, DetailActivity.class);
 				intent.putExtra("ID", mObjectListData.get(position).id);
+				intent.putExtra("Back","详情");
 				startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
 				overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);

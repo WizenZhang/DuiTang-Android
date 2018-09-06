@@ -2,28 +2,21 @@ package com.example.duitang;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import me.maxwin.view.XListView;
 import me.maxwin.view.XListView.IXListViewListener;
-
 import com.dodowaterfall.Helper;
-import com.example.android.bitmapfun.util.ImageFetcher;
-import com.example.duitang.DetailActivity.ListAdapter;
-import com.example.duitang.R.drawable;
 import com.example.duitang.global.NetInterface;
-import com.example.duitang.model.BannerDetailData;
-import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.CategoryDetail;
 import com.example.duitang.model.CategoryDetail.Sub_Cates;
 import com.example.duitang.model.MainData;
-import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
-import com.example.duitang.utils.FastBlurUtil;
 import com.example.duitang.utils.PrefUtils;
-import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 import com.huewu.pla.lib.internal.PLA_AdapterView.OnItemClickListener;
@@ -34,7 +27,6 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -45,16 +37,15 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+
 import android.os.AsyncTask.Status;
 import android.util.Log;
-import android.view.Gravity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,9 +54,9 @@ import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,7 +99,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		btnBack = (RadioButton) findViewById(R.id.btn_user_back);
 		xListView = (XListView) findViewById(R.id.xlist);
 		
-		tvTitle.setText(getIntent().getStringExtra("Name"));
+		tvTitle.setText(getIntent().getStringExtra("Title"));
 		btnBack.setText("分类");
 		
 		btnBack.setOnClickListener(this);
@@ -145,7 +136,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 				String Id = mObjectListData.get(position).id;
 				if (!ids.contains(Id)) {
 					ids = ids + Id +",";
-					PrefUtils.setString(parent.getContext(), "resd_ids", ids);
+					PrefUtils.setString(parent.getContext(), "read_ids", ids);
 				}
 				
 				// mNewsAdapter.notifyDataSetChanged();
@@ -155,6 +146,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 				Intent intent = new Intent();
 				intent.setClass(CategoryActivity.this, DetailActivity.class);
 				intent.putExtra("ID", mObjectListData.get(position).id);
+				intent.putExtra("Back",getIntent().getStringExtra("Title"));
 				startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
 				overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
@@ -167,7 +159,8 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		xListView.setAdapter(mListAdapter);
 	}
 	
-	private void initHeadView() {	
+	private void initHeadView() {
+
 //		iv_background = (ImageView) headerView.findViewById(R.id.iv_header);
 		getDataFromServer(CategoryUpUrl);	
 	}
@@ -206,7 +199,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		mCategoryDetail = gson.fromJson(result,CategoryDetail.class);
 //		Log.i("tag", "url:" + mCategoryDetail.data.sub_cates.get(0).name);
 		if (null != mCategoryDetail) {
-			Log.i("tag", "size:" + mCategoryDetail.data.sub_cates.size());
+//			Log.i("tag", "size:" + mCategoryDetail.data.sub_cates.size());
 			mGridAdapter = new GridAdapter();
 			gridView.setAdapter(mGridAdapter);
 		}
@@ -238,7 +231,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView,ViewGroup parent) {
 			HeadViewHolder holder;
 			if (convertView == null) {
 				holder = new HeadViewHolder();
@@ -248,8 +241,38 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 			}else{
 				holder = (HeadViewHolder) convertView.getTag();
 			}
-			Sub_Cates item = (Sub_Cates) getItem(position);
+			final Sub_Cates item = (Sub_Cates) getItem(position);
 			holder.tvCategore.setText("#" + item.name);
+			holder.tvCategore.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					String str;
+					String strUTF8 = null;
+					if (item.theme_name.contains("Heap_")) {
+						str = mCategoryDetail.data.name + "_" + item.name;	
+					}else{
+						str = item.theme_name;	
+					}
+					
+					try {
+						 strUTF8 = URLEncoder.encode(str, "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+					
+					//跳转详情页
+					Intent intent = new Intent();
+					intent.setClass(CategoryActivity.this, CategoryUpDetail.class);
+					intent.putExtra("strUTF8", strUTF8);
+					intent.putExtra("Back", getIntent().getStringExtra("Title"));
+					intent.putExtra("Title", item.name);
+//					intent.putExtra("Key", Key);
+					startActivity(intent);
+					//设置切换动画，从右边进入，左边退出 
+					overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);
+				}
+			});
 			return convertView;
 		}
 		
@@ -350,7 +373,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		            Gson gson = new Gson();
 		    		mMainData = gson.fromJson(json,MainData.class);
 		    		
-		    		final String Path=mMainData.data.object_list.get(0).photo.path;
+//		    		final String Path=mMainData.data.object_list.get(0).photo.path;
 		    		if (mMainData.status == 1) {
 		    			duitangs = mMainData.data.object_list;
 		    			//模糊图片
@@ -380,14 +403,14 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 	class XListAdapter extends BaseAdapter{
 
 		private Context mContext;
-        private XListView mListView;
+//        private XListView mListView;
         private BitmapUtils utilsPhoto;
 		private BitmapUtils utilsAvatar;
 		
         public XListAdapter(Context context, XListView xListView) {
             mContext = context;
             mObjectListData = new LinkedList<ObjectList>();
-            mListView = xListView;
+//            mListView = xListView;
             utilsPhoto= new BitmapUtils(mContext);
 		    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
 		    utilsAvatar= new BitmapUtils(mContext);

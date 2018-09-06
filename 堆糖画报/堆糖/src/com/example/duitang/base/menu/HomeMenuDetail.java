@@ -333,6 +333,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 				//跳转详情页
 				Intent intent = new Intent();
 				intent.setClass(mActivity, DetailActivity.class);
+				intent.putExtra("Back","首页");
 				intent.putExtra("ID", mObjectListData.get(position).id);
 				mActivity.startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
@@ -452,6 +453,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 					   //跳转详情页
 						Intent intent = new Intent();
 						intent.setClass(mActivity, UserActivity.class);
+						intent.putExtra("Back","首页");
 						intent.putExtra("ID", newID);
 						mActivity.startActivity(intent);
 						//设置切换动画，从右边进入，左边退出 

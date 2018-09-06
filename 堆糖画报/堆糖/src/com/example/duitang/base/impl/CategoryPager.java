@@ -220,7 +220,7 @@ public class CategoryPager extends BasePager{
 				//跳转详情页
 				Intent intent = new Intent();
 				intent.setClass(mActivity, CategoryActivity.class);
-				intent.putExtra("Name", Name);
+				intent.putExtra("Title", Name);
 				intent.putExtra("Key", Key);
 				mActivity.startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
