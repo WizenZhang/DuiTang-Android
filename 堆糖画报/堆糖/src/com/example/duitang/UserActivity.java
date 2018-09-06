@@ -147,7 +147,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 				Intent intent = new Intent();
 				intent.setClass(UserActivity.this, DetailActivity.class);
 				intent.putExtra("ID", mObjectListData.get(position).id);
-				intent.putExtra("Back","详情");
+				intent.putExtra("Back","专辑");
 				startActivity(intent);
 				//设置切换动画，从右边进入，左边退出 
 				overridePendingTransition(com.example.duitang.R.anim.slide_right_in,com.example.duitang.R.anim.slide_left_out);

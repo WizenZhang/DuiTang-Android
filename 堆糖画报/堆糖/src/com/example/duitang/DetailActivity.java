@@ -48,12 +48,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
@@ -101,6 +103,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 		private BitmapUtils utils;
 		private LinearLayout like_users;
 		private LinearLayout related_albums;
+		private boolean checked;
 		
 		public ListAdapter(Context context, ListView listView){
 			mContext = context;
@@ -148,7 +151,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 					holderFirst.ivAvatar =  (RoundImageView) convertView.findViewById(R.id.iv_d_avatar);
 					holderFirst.tvName =  (TextView) convertView.findViewById(R.id.tv_d_name);
 					holderFirst.tvUserName =  (TextView) convertView.findViewById(R.id.tv_d_username);
-                    holderFirst.btDetail = (Button) convertView.findViewById(R.id.bt_detail);
+                    holderFirst.rlDetail = (RelativeLayout) convertView.findViewById(R.id.rl_detail);
 					convertView.setTag(holderFirst);
 	                
 	                utils.display(holderFirst.ivPhoto, item.photo.path);
@@ -159,7 +162,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 	                mAvatarLoader.displayImage(item.sender.avatar,holderFirst.ivAvatar);
 	                holderFirst.tvName.setText(" ’≤ÿµΩ " + item.album.name);
 	                holderFirst.tvUserName.setText(item.sender.username);
-	                holderFirst.btDetail.setOnClickListener(new OnClickListener() {
+	                holderFirst.rlDetail.setOnClickListener(new OnClickListener() {
 					
                 	//…Ë÷√Õº∆¨µ„ª˜º‡Ã˝
  					final String id_detail = data.album.id;
@@ -181,17 +184,21 @@ public class DetailActivity extends Activity implements OnClickListener{
 		        	convertView = layoutInflator.inflate(R.layout.home_detail_second, null);
 		        	holderSecond = new ViewHolderSecond();
 		        	holderSecond.tvLikeCount =  (TextView) convertView.findViewById(R.id.tv_like_count);
-		        	holderSecond.btCollection = (Button) convertView.findViewById(R.id.bt_collection);
+		        	holderSecond.btCollection = (RadioButton) convertView.findViewById(R.id.bt_collection);
+		        	
 		        	convertView.setTag(holderSecond);
 		        	
 		        	holderSecond.tvLikeCount.setText("‘ﬁ  " + item.top_like_users.size());
-		        	
+		        	Log.i("tag", "btCollection.isChecked:"+String.valueOf(holderSecond.btCollection.isChecked()));
+		        	checked = holderSecond.btCollection.isChecked();
 		        	like_users = (LinearLayout) convertView.findViewById(R.id.ll_like_users);
 		        	holderSecond.btCollection.setOnClickListener(new OnClickListener() {
 						
 						@Override
-						public void onClick(View arg0) {
-							Log.i("tag", "btCollection");
+						public void onClick(View v) {											
+							checked=!checked;
+//							Log.i("tag", "checked:"+String.valueOf(checked));
+							((CompoundButton) v).setChecked(checked);
 						}
 					});
 		 	    	if (data.top_like_users!= null) {
@@ -280,11 +287,11 @@ public class DetailActivity extends Activity implements OnClickListener{
 			public RoundImageView ivAvatar;
 			public TextView tvName;
 			public TextView tvUserName;
-			public Button btDetail;
+			public RelativeLayout rlDetail;
 		}
 	 class ViewHolderSecond {
 			public TextView tvLikeCount;
-			public Button btCollection;
+			public RadioButton btCollection;
 		}
 	 class ViewHolderThird {
 			public TextView tvFavoriteCount;

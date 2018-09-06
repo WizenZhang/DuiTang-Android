@@ -44,7 +44,7 @@ public class StorePager extends BasePager {
 	public void initData() {
 		tvTitle.setText("收藏");
 		btnMenu.setVisibility(View.GONE);//隐藏菜单按钮
-//
+		Toast.makeText(mActivity, "开发中，敬请期待...", Toast.LENGTH_SHORT).show();
 //		
 //		TextView text = new TextView(mActivity);
 //		text.setText("首页");

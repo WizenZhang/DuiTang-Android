@@ -9,7 +9,7 @@
    <GridView
        android:id="@+id/gv_header" 
        android:layout_width="match_parent"
-       android:layout_height="130dp"
+       android:layout_height="0dp"
        android:numColumns="3"
        ></GridView>
     

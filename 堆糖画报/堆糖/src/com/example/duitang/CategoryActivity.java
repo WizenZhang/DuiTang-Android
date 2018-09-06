@@ -64,6 +64,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 
 	private CategoryDetail mCategoryDetail;
 	private TextView tvTitle;
+	private TextView tvItem;
 	private RadioButton btnBack;
 	private String CategoryUpUrl;
 
@@ -98,6 +99,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		tvTitle =(TextView)findViewById(R.id.tv_title);
 		btnBack = (RadioButton) findViewById(R.id.btn_user_back);
 		xListView = (XListView) findViewById(R.id.xlist);
+		tvItem = (TextView) findViewById(R.id.tv_category);
 		
 		tvTitle.setText(getIntent().getStringExtra("Title"));
 		btnBack.setText("分类");
@@ -202,6 +204,22 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 //			Log.i("tag", "size:" + mCategoryDetail.data.sub_cates.size());
 			mGridAdapter = new GridAdapter();
 			gridView.setAdapter(mGridAdapter);
+//		     Log.i("tag", "size:" + String.valueOf(tvItem.getMeasuredHeight()));
+			//自定义gridView高度
+			ViewGroup.LayoutParams params = gridView.getLayoutParams();
+			//dp和px关系：dp=px/设备密度
+			//获取设备密度，和分辨率有关
+			float density = getResources().getDisplayMetrics().density;
+//			Toast.makeText(this, String.valueOf(density), Toast.LENGTH_SHORT).show();
+			int row = mCategoryDetail.data.sub_cates.size()/3;
+			int column= mCategoryDetail.data.sub_cates.size()%3;
+			if (column == 0) {
+				params.height =  (int) (30*row*density);
+			}else{
+				params.height =  (int) (30*(row+1)*density);
+			}
+			gridView.setLayoutParams(params);
+			
 		}
     	
 	}

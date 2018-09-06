@@ -16,6 +16,7 @@
         android:adjustViewBounds="true"
         android:src="@drawable/image_default"/>
     <RelativeLayout 
+        android:id="@+id/rl_detail"
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <com.example.duitang.view.RoundImageView
@@ -43,6 +44,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
             android:layout_centerVertical="true"
+            android:clickable="false"
             android:background="@drawable/detail" />
 
         <TextView

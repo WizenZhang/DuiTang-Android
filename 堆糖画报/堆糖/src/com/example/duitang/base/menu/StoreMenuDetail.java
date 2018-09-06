@@ -339,17 +339,17 @@ public class StoreMenuDetail extends BaseMenuDetailpager implements IXListViewLi
 	@Override
 	public void initData() {
 		
-		xListView.setPullLoadEnable(true);
-		xListView.setXListViewListener(this);
-      
-		mListAdapter = new XListAdapter(mActivity, xListView);
-		xListView.setAdapter(mListAdapter);
+//		xListView.setPullLoadEnable(true);
+//		xListView.setXListViewListener(this);
+//      
+//		mListAdapter = new XListAdapter(mActivity, xListView);
+//		xListView.setAdapter(mListAdapter);
+////        
+//        mImagesFetcher = new ImageFetcher(mActivity, 240);
+//        mImagesFetcher.setLoadingImage(R.drawable.empty_photo);
+//        mImagesFetcher.setExitTasksEarly(false);
 //        
-        mImagesFetcher = new ImageFetcher(mActivity, 240);
-        mImagesFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImagesFetcher.setExitTasksEarly(false);
-        
-        AddItemToContainer(2,0);
+//        AddItemToContainer(2,0);
 	}
 
 	
