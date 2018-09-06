@@ -17,6 +17,7 @@ import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerDetailData;
 import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.CategoryDetail;
+import com.example.duitang.model.CategoryDetail.Sub_Cates;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
@@ -60,6 +61,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -76,26 +78,24 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 
 	private MainData mMainData;
 	private XListView xListView;//列表
+	private GridView gridView;//列表
 	private LinkedList<ObjectList> mObjectListData;
     private XListAdapter mListAdapter;
     private int currentPage = 0;
-	private ImageFetcher mImagesFetcher;
 
-	private LinearLayout rl_background;
+    private GridAdapter mGridAdapter;
 	
 	ContentTask task = new ContentTask(this, 2);
 	private View headerView;
 	
-	private ImageView iv_background;
+//	private ImageView iv_background;
 	
-	private ImageLoader mImageLoader;
-
-	Handler handler = new Handler(){
-    	//此方法在主线程中调用，可以用来刷新UI
-    	public void handleMessage(android.os.Message msg) {
-    		iv_background.setImageBitmap((Bitmap)msg.obj);
-    	};
-    };
+//	Handler handler = new Handler(){
+//    	//此方法在主线程中调用，可以用来刷新UI
+//    	public void handleMessage(android.os.Message msg) {
+//    		iv_background.setImageBitmap((Bitmap)msg.obj);
+//    	};
+//    };
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +130,8 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 //      //加载头布局
 		headerView = View.inflate(this, R.layout.category_header, null);
 		ViewUtils.inject(this,headerView);
-		rl_background = (LinearLayout) headerView.findViewById(R.id.rl_background);
+		gridView = (GridView) headerView.findViewById(R.id.gv_header);
+		
 		xListView.addHeaderView(headerView);
 		xListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -167,7 +168,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 	}
 	
 	private void initHeadView() {	
-		iv_background = (ImageView) headerView.findViewById(R.id.iv_background);
+//		iv_background = (ImageView) headerView.findViewById(R.id.iv_header);
 		getDataFromServer(CategoryUpUrl);	
 	}
 	/**
@@ -205,23 +206,58 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		mCategoryDetail = gson.fromJson(result,CategoryDetail.class);
 //		Log.i("tag", "url:" + mCategoryDetail.data.sub_cates.get(0).name);
 		if (null != mCategoryDetail) {
-			for (int i = 0; i < mCategoryDetail.data.sub_cates.size(); i++) {
-				TextView text = new TextView(this);
-				text.setText("#"+mCategoryDetail.data.sub_cates.get(i).name);
-				text.setTextColor(Color.WHITE);
-				text.setTextSize(15);
-				text.setBackgroundResource(drawable.transparent_button);
-				text.setGravity(Gravity.CENTER);
-				LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT); 
-				text.setLayoutParams(params);
-				
-				rl_background.addView(text);
-			}
-
+			Log.i("tag", "size:" + mCategoryDetail.data.sub_cates.size());
+			mGridAdapter = new GridAdapter();
+			gridView.setAdapter(mGridAdapter);
 		}
     	
 	}
-	
+	/**
+	 * 列表的适配器
+	 * @author Wizen
+	 *
+	 */
+	class GridAdapter extends BaseAdapter{
+
+		@Override
+		public int getCount() {
+
+			return mCategoryDetail.data.sub_cates.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+
+			return mCategoryDetail.data.sub_cates.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			HeadViewHolder holder;
+			if (convertView == null) {
+				holder = new HeadViewHolder();
+				convertView = View.inflate(parent.getContext(), R.layout.category_header_item, null);
+			    holder.tvCategore = (TextView) convertView.findViewById(R.id.tv_category);
+			    convertView.setTag(holder);
+			}else{
+				holder = (HeadViewHolder) convertView.getTag();
+			}
+			Sub_Cates item = (Sub_Cates) getItem(position);
+			holder.tvCategore.setText("#" + item.name);
+			return convertView;
+		}
+		
+	}
+
+	static class HeadViewHolder {
+		public TextView tvCategore;
+	}
 	/**
 	 * 改变已读新闻的颜色
 	 */
@@ -318,18 +354,18 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		    		if (mMainData.status == 1) {
 		    			duitangs = mMainData.data.object_list;
 		    			//模糊图片
-		    			Thread t = new Thread(){
-		                	@Override
-		                	public void run() {
-		                	Bitmap blurBitmap = FastBlurUtil.GetUrlBitmap(Path, 10);          	
-		                	Message msg = new Message();
-		                	//消息对象可以携带数据
-		                	msg.obj = blurBitmap;
-		                	//把消息发送至主线程的消息队列
-		                	handler.sendMessage(msg);
-		                	}
-		                };
-		                t.start();
+//		    			Thread t = new Thread(){
+//		                	@Override
+//		                	public void run() {
+//		                	Bitmap blurBitmap = FastBlurUtil.GetUrlBitmap(Path, 10);          	
+//		                	Message msg = new Message();
+//		                	//消息对象可以携带数据
+//		                	msg.obj = blurBitmap;
+//		                	//把消息发送至主线程的消息队列
+//		                	handler.sendMessage(msg);
+//		                	}
+//		                };
+//		                t.start();
 					}
             }
             return duitangs;

@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
+    android:layout_height="match_parent" 
+    android:background="#A5A6A5"
     >
 
-   <ImageView 
-       android:id="@+id/iv_background"
+   <GridView
+       android:id="@+id/gv_header" 
        android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:background="@android:color/darker_gray"
-       android:scaleType="centerCrop"
-   />
-   <LinearLayout
-       android:id="@+id/rl_background" 
-       android:layout_width="wrap_content"
-       android:layout_height="match_parent"
-       android:padding="5dp"
-       android:orientation="vertical"
-       ></LinearLayout>
+       android:layout_height="130dp"
+       android:numColumns="3"
+       ></GridView>
     
-</FrameLayout>
+</RelativeLayout>
