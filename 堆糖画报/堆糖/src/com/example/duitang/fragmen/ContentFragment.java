@@ -86,13 +86,12 @@ public class ContentFragment extends BaseFragment {
 			@Override
 			public void onPageScrolled(int position, float positionOffset,
 					int positionOffsetPixels) {
-				// TODO Auto-generated method stub
-				
+
 			}
 			
 			@Override
 			public void onPageScrollStateChanged(int state) {
-				// TODO Auto-generated method stub
+
 				
 			}
 		});
@@ -103,13 +102,13 @@ public class ContentFragment extends BaseFragment {
 
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return mPagerList.size();
 		}
 
 		@Override
 		public boolean isViewFromObject(View view, Object object) {
-			// TODO Auto-generated method stub
+
 			return view==object;
 		}
 		
@@ -123,7 +122,7 @@ public class ContentFragment extends BaseFragment {
 		
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
-			// TODO Auto-generated method stub
+
 			container.removeView((View)object);
 		}
 	}

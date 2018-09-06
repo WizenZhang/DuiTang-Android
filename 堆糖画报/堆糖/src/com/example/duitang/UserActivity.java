@@ -5,18 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import me.maxwin.view.XListView;
 import me.maxwin.view.XListView.IXListViewListener;
-
 import com.dodowaterfall.Helper;
-import com.example.android.bitmapfun.util.ImageFetcher;
-import com.example.duitang.DetailActivity.ListAdapter;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerDetailData;
 import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.MainData;
-import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.utils.FastBlurUtil;
 import com.example.duitang.utils.PrefUtils;
@@ -31,7 +26,6 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -73,7 +67,6 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	private LinkedList<ObjectList> mObjectListData;
     private XListAdapter mListAdapter;
     private int currentPage = 0;
-	private ImageFetcher mImagesFetcher;
 
 	ContentTask task = new ContentTask(this, 2);
 	private View headerView;
@@ -93,10 +86,10 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
     		iv_background.setImageBitmap((Bitmap)msg.obj);
     	};
     };
-	private TextView tvTitle;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.user_activity);
@@ -105,7 +98,6 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 		xListView = (XListView) findViewById(R.id.xlist);
 		btnBack.setOnClickListener(this);
 		btnBack.setText(getIntent().getStringExtra("Back"));
-		tvTitle =(TextView)findViewById(R.id.tv_title);	
 		
 		userUpUrl = NetInterface.BANNERDETAILUP + getIntent().getStringExtra("ID");
 		
@@ -342,14 +334,14 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	class XListAdapter extends BaseAdapter{
 
 		private Context mContext;
-        private XListView mListView;
+
         private BitmapUtils utilsPhoto;
 		private BitmapUtils utilsAvatar;
 		
         public XListAdapter(Context context, XListView xListView) {
             mContext = context;
             mObjectListData = new LinkedList<ObjectList>();
-            mListView = xListView;
+
             utilsPhoto= new BitmapUtils(mContext);
 		    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
 		    utilsAvatar= new BitmapUtils(mContext);
@@ -363,20 +355,20 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
         }
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return mObjectListData.size();
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mObjectListData.get(arg0);
+		public Object getItem(int positoin) {
+
+			return mObjectListData.get(positoin);
 		}
 
 		@Override
-		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
-			return 0;
+		public long getItemId(int positoin) {
+
+			return positoin;
 		}
 
 		@Override
@@ -466,7 +458,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 	
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
+
 		super.onBackPressed();
 		finish();
 		overridePendingTransition(com.example.duitang.R.anim.slide_left_in,com.example.duitang.R.anim.slide_right_out);

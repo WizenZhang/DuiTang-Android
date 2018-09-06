@@ -3,7 +3,6 @@ package com.example.duitang;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -32,17 +31,14 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.os.AsyncTask.Status;
 import android.util.Log;
 
@@ -64,7 +60,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 
 	private CategoryDetail mCategoryDetail;
 	private TextView tvTitle;
-	private TextView tvItem;
+
 	private RadioButton btnBack;
 	private String CategoryUpUrl;
 
@@ -91,7 +87,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.user_activity);
@@ -99,7 +95,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 		tvTitle =(TextView)findViewById(R.id.tv_title);
 		btnBack = (RadioButton) findViewById(R.id.btn_user_back);
 		xListView = (XListView) findViewById(R.id.xlist);
-		tvItem = (TextView) findViewById(R.id.tv_category);
+
 		
 		tvTitle.setText(getIntent().getStringExtra("Title"));
 		btnBack.setText("·ÖÀà");
@@ -437,20 +433,20 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
         }
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return mObjectListData.size();
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mObjectListData.get(arg0);
+		public Object getItem(int positoin) {
+
+			return mObjectListData.get(positoin);
 		}
 
 		@Override
-		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
-			return 0;
+		public long getItemId(int positoin) {
+
+			return positoin;
 		}
 
 		@Override
@@ -540,7 +536,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 	
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
+
 		super.onBackPressed();
 		finish();
 		overridePendingTransition(com.example.duitang.R.anim.slide_left_in,com.example.duitang.R.anim.slide_right_out);

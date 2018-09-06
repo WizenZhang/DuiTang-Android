@@ -1,20 +1,13 @@
 package com.example.duitang;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import me.maxwin.view.XListView;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
-
+import com.example.duitang.db.Collection;
+import com.example.duitang.db.DatabaseUtil;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.MainDetailData;
-import com.example.duitang.model.BannerData.BannerDatas;
-import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.model.MainDetailData.Data;
-import com.example.duitang.model.MainDetailData.LikeUser;
-import com.example.duitang.utils.CacheUtils;
 import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
@@ -33,23 +26,16 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,7 +43,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
+import android.widget.Toast;
 
 
 public class DetailActivity extends Activity implements OnClickListener{
@@ -71,9 +57,10 @@ public class DetailActivity extends Activity implements OnClickListener{
 	private ImageLoader mAvatarLoader;
 	private ImageLoader mLikeLoader;
 
+	private DatabaseUtil mDBUtil;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.home_detail);
@@ -88,7 +75,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 		btnShare.setOnClickListener(this);
 
 		detailUrl = NetInterface.MAINDETAIL + getIntent().getStringExtra("ID");
-//		Log.i("tag", "url:" + detailUrl);
+
 		getDataFromServer();
 	}
 	
@@ -99,7 +86,6 @@ public class DetailActivity extends Activity implements OnClickListener{
 	 */
 	class ListAdapter extends BaseAdapter{
 		private Context mContext;
-        private ListView mListView;
 		private BitmapUtils utils;
 		private LinearLayout like_users;
 		private LinearLayout related_albums;
@@ -107,7 +93,6 @@ public class DetailActivity extends Activity implements OnClickListener{
 		
 		public ListAdapter(Context context, ListView listView){
 			mContext = context;
-            mListView = listView;
 			utils = new BitmapUtils(mContext);
         	utils.configDefaultLoadingImage(R.drawable.image_default);
         	mAvatarLoader = initImageLoader(mContext, mAvatarLoader, "Avatar");
@@ -115,19 +100,19 @@ public class DetailActivity extends Activity implements OnClickListener{
 		}
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return 3;
 		}
 
 		@Override
 		public Object getItem(int position) {
-			// TODO Auto-generated method stub
+
 			return data;
 		}
 
 		@Override
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
+
 			return 0;
 		}
 
@@ -137,7 +122,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 			ViewHolderFirst holderFirst = null;
 			ViewHolderSecond holderSecond = null;
 			ViewHolderThird holderThird = null;
-			Data item = (Data) getItem(position);
+			final Data item = (Data) getItem(position);
 //			if (convertView == null) {
 			
 				LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
@@ -189,18 +174,38 @@ public class DetailActivity extends Activity implements OnClickListener{
 		        	convertView.setTag(holderSecond);
 		        	
 		        	holderSecond.tvLikeCount.setText("赞  " + item.top_like_users.size());
-		        	Log.i("tag", "btCollection.isChecked:"+String.valueOf(holderSecond.btCollection.isChecked()));
-		        	checked = holderSecond.btCollection.isChecked();
+//		        	Log.i("tag", "btCollection.isChecked:"+String.valueOf(holderSecond.btCollection.isChecked()));
+		        	
 		        	like_users = (LinearLayout) convertView.findViewById(R.id.ll_like_users);
-		        	holderSecond.btCollection.setOnClickListener(new OnClickListener() {
-						
+		        	
+		        	//获取数据库
+		    		mDBUtil = new DatabaseUtil(mContext);
+		    		checked = mDBUtil.queryByid(item.id);
+		    		holderSecond.btCollection.setChecked(mDBUtil.queryByid(item.id));
+//		    		checked = holderSecond.btCollection.isChecked();
+//					Log.i("tag", "数据结果:"+checked);
+		        	holderSecond.btCollection.setOnClickListener(new OnClickListener() {	
 						@Override
 						public void onClick(View v) {											
 							checked=!checked;
-//							Log.i("tag", "checked:"+String.valueOf(checked));
+//							Log.i("tag", "checked:"+String.valueOf(item.id));
 							((CompoundButton) v).setChecked(checked);
+							if (checked == true) {
+								Collection collection = new Collection();
+								collection.setId(item.id);
+								collection.setName(item.sender.username);
+								collection.setPath(item.photo.path);
+								if(mDBUtil.Insert(collection)){
+									Toast.makeText(mContext, "收藏成功", Toast.LENGTH_SHORT).show();
+								}
+							} else {
+								mDBUtil.Delete(item.id);
+								Toast.makeText(mContext, "收藏已取消", Toast.LENGTH_SHORT).show();
+							}
+							
 						}
 					});
+		        	
 		 	    	if (data.top_like_users!= null) {
 		 	    		for (int i = 0; i < data.top_like_users.size(); i++) {
 		 					View like_user_item = LayoutInflater.from(parent.getContext()).inflate(
@@ -434,7 +439,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 	
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
+
 		super.onBackPressed();
 		finish();
 		overridePendingTransition(com.example.duitang.R.anim.slide_left_in,com.example.duitang.R.anim.slide_right_out);

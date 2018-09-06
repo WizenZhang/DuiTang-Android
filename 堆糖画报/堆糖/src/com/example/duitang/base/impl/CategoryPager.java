@@ -1,20 +1,12 @@
 package com.example.duitang.base.impl;
 
-import java.util.ArrayList;
-
 import com.example.duitang.CategoryActivity;
 import com.example.duitang.R;
-import com.example.duitang.UserActivity;
-import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.base.BasePager;
-import com.example.duitang.base.menu.HomeMenuDetail;
 import com.example.duitang.global.CategoryImageUrl;
 import com.example.duitang.global.NetInterface;
-import com.example.duitang.model.BannerData;
 import com.example.duitang.model.CategoryData;
 import com.example.duitang.model.CategoryData.Datas;
-import com.example.duitang.model.CategoryData.Group_Items;
-import com.example.duitang.utils.CacheUtils;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -24,13 +16,8 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
-
 import android.app.Activity;
 import android.content.Intent;
-
-import android.graphics.Color;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -38,7 +25,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +43,6 @@ public class CategoryPager extends BasePager{
 	
 	public CategoryPager(Activity activity) {
 		super(activity);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

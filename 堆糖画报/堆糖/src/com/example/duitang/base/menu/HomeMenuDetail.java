@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import me.maxwin.view.XListView;
 import me.maxwin.view.XListView.IXListViewListener;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +24,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
@@ -39,10 +36,8 @@ import com.example.duitang.UserActivity;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData.BannerDatas;
-import com.example.duitang.model.BannerData;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
-import com.example.duitang.utils.CacheUtils;
 import com.example.duitang.utils.PrefUtils;
 import com.google.gson.Gson;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
@@ -185,16 +180,11 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 	 *
 	 */
 	class XListAdapter extends BaseAdapter{
-
-		private Context mContext;
-        private XListView mListView;
         private BitmapUtils utilsPhoto;
 		private BitmapUtils utilsAvatar;
 		
         public XListAdapter(Context context, XListView xListView) {
-            mContext = context;
             mObjectListData = new LinkedList<ObjectList>();
-            mListView = xListView;
             utilsPhoto= new BitmapUtils(mActivity);
 		    utilsPhoto.configDefaultLoadingImage(R.drawable.image_default);
 		    utilsAvatar= new BitmapUtils(mActivity);
@@ -202,20 +192,19 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
         }
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return mObjectListData.size();
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mObjectListData.get(arg0);
+		public Object getItem(int position) {
+
+			return mObjectListData.get(position);
 		}
 
 		@Override
-		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
-			return 0;
+		public long getItemId(int position) {
+			return position;
 		}
 
 		@Override
@@ -530,7 +519,7 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 
 	@Override
 	public void onPageScrolled(int arg0, float arg1, int arg2) {
-		// TODO Auto-generated method stub
+
 		
 	}
 

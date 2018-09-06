@@ -16,7 +16,7 @@ public class MainDetailData {
 		public Sender sender;
 		public Album album;
 		public String msg;
-    	public String id;
+    	public int id;
     	public String add_datetime_pretty;
     	public String like_count;
     	public String favorite_count;

@@ -3,13 +3,10 @@ package com.example.duitang;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
-import android.view.animation.ScaleAnimation;
 import android.widget.RelativeLayout;
 
 public class LaunchActivity extends Activity {
@@ -29,7 +26,7 @@ public class LaunchActivity extends Activity {
      * 开启动画
      */
     private void startAnim() {
-		// TODO Auto-generated method stub
+
         //动画集合
     	AnimationSet set= new AnimationSet(false);
     
@@ -57,13 +54,13 @@ public class LaunchActivity extends Activity {
 			
 			@Override
 			public void onAnimationStart(Animation arg0) {
-				// TODO Auto-generated method stub
+
 				
 			}
 			
 			@Override
 			public void onAnimationRepeat(Animation arg0) {
-				// TODO Auto-generated method stub
+
 				
 			}
 			

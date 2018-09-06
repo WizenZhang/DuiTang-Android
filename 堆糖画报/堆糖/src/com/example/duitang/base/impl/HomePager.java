@@ -1,32 +1,21 @@
 package com.example.duitang.base.impl;
 
 import java.util.ArrayList;
-
-import com.example.duitang.R;
 import com.example.duitang.base.BaseMenuDetailpager;
 import com.example.duitang.base.BasePager;
 import com.example.duitang.base.menu.HomeMenuDetail;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData;
-import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.utils.CacheUtils;
 import com.google.gson.Gson;
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-
-import android.R.string;
 import android.app.Activity;
-
-import android.graphics.Color;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -41,7 +30,6 @@ public class HomePager extends BasePager {
 
 	public HomePager(Activity activity) {
 		super(activity);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

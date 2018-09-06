@@ -1,16 +1,13 @@
 package com.example.duitang;
 
-import java.util.ArrayList;
+
 
 import com.example.duitang.fragmen.ContentFragment;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.Window;
-import android.widget.RadioGroup;
 
 public class MainActivity extends Activity {
 	
@@ -18,7 +15,7 @@ public class MainActivity extends Activity {
 	
     @Override
 	public void onCreate(Bundle savedInstanceState) {
-   	// TODO Auto-generated method stub
+
    	super.onCreate(savedInstanceState);
    	requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚
    	
