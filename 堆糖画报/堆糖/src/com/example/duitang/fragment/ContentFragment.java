@@ -1,4 +1,4 @@
-package com.example.duitang.fragmen;
+package com.example.duitang.fragment;
 
 import java.util.ArrayList;
 

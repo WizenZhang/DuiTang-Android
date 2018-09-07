@@ -8,6 +8,7 @@ import com.example.duitang.db.DatabaseUtil;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.MainDetailData;
 import com.example.duitang.model.MainDetailData.Data;
+import com.example.duitang.utils.NetworkUtils;
 import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
@@ -26,6 +27,8 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -77,8 +80,10 @@ public class DetailActivity extends Activity implements OnClickListener{
 		detailUrl = NetInterface.MAINDETAIL + getIntent().getStringExtra("ID");
 
 		getDataFromServer();
+	
 	}
 	
+    
 	/**
 	 * ¡–±Ìµƒ  ≈‰∆˜
 	 * @author Wizen
@@ -321,7 +326,7 @@ public class DetailActivity extends Activity implements OnClickListener{
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				
+				Toast.makeText(DetailActivity.this, "No network connection found.", Toast.LENGTH_SHORT).show();
 				error.printStackTrace();
 				
 			}
@@ -353,7 +358,11 @@ public class DetailActivity extends Activity implements OnClickListener{
 			overridePendingTransition(com.example.duitang.R.anim.slide_left_in,com.example.duitang.R.anim.slide_right_out);
 			break;
 		case R.id.btn_share:
+			if (NetworkUtils.isNetworkAvailable(this)){
 			showShare();
+			}else {
+			Toast.makeText(this, "No network connection found.", Toast.LENGTH_SHORT).show();	
+			}
 			break;
 
 		default:

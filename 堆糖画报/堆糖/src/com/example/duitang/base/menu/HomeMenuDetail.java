@@ -38,6 +38,7 @@ import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.BannerData.BannerDatas;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.utils.NetworkUtils;
 import com.example.duitang.utils.PrefUtils;
 import com.google.gson.Gson;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
@@ -161,16 +162,18 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
      * 1为下拉刷新 2为加载更多
      */
     private void AddItemToContainer(int type,int pageindex) {
-        if (task.getStatus() != Status.RUNNING) {
-            String url = NetInterface.MAIN + pageindex;
-            ContentTask task = new ContentTask(mActivity, type);
-//            Log.i("tag", "url:" + url);
-//            String cache = CacheUtils.getCache(url,
-//    				mActivity);
-//    		Log.i("tag", "缓存结果:"+cache);
-//    		parseData(cache);
-            task.execute(url);
-
+    	 if (NetworkUtils.isNetworkAvailable(mActivity)){
+	        if (task.getStatus() != Status.RUNNING) {
+	            String url = NetInterface.MAIN + pageindex;
+	           
+            	 ContentTask task = new ContentTask(mActivity, type);
+//               Log.i("tag", "url:" + url);
+//               String cache = CacheUtils.getCache(url,
+//       				mActivity);
+//       		Log.i("tag", "缓存结果:"+cache);
+//       		parseData(cache);
+               task.execute(url);
+		    }
         }
     }
 
@@ -501,19 +504,22 @@ public class HomeMenuDetail extends BaseMenuDetailpager implements IXListViewLis
 
 	@Override
 	public void onLoadMore() {
-		if (mMainData.status == 1) {
-			if (currentPage <mMainData.data.total) {
-				AddItemToContainer(2,currentPage+=24);			
-			}else{
-				Toast.makeText(mActivity, "没有更多了", Toast.LENGTH_SHORT).show();
-				return;
-			}
-		}	
+		if (NetworkUtils.isNetworkAvailable(mActivity))
+        {
+			if (mMainData.status == 1) {
+				if (currentPage <mMainData.data.total) {
+					AddItemToContainer(2,currentPage+=24);			
+				}else{
+					Toast.makeText(mActivity, "没有更多了", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}	
+        }
 	}
 
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
-		// TODO Auto-generated method stub
+	
 		
 	}
 

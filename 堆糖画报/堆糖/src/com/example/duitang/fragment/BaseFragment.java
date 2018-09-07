@@ -1,4 +1,4 @@
-package com.example.duitang.fragmen;
+package com.example.duitang.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;

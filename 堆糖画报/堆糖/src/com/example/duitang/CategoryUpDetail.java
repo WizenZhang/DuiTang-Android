@@ -13,6 +13,7 @@ import com.dodowaterfall.Helper;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.utils.NetworkUtils;
 import com.example.duitang.utils.PrefUtils;
 
 import com.google.gson.Gson;
@@ -141,11 +142,13 @@ public class CategoryUpDetail extends Activity implements OnClickListener,IXList
      * 1为下拉刷新 2为加载更多
      */
     private void AddItemToContainer(int type,int pageindex) {
+    	if (NetworkUtils.isNetworkAvailable(this)){
         if (task.getStatus() != Status.RUNNING) {
         	String Url = url + "&device_platform=YUSUN%2BLA2-W&screen_width=720&screen_height=1280&app_version=57&start="+pageindex+"&platform_name=Android&locale=zh&app_code=nayutas";
             ContentTask task = new ContentTask(this, type);
             task.execute(Url);
-        }
+          }
+    	}
     }
     
 	private class ContentTask extends AsyncTask<String, Integer, List<ObjectList>> {
@@ -365,14 +368,17 @@ public class CategoryUpDetail extends Activity implements OnClickListener,IXList
 
 	@Override
 	public void onLoadMore() {
-		if (mMainData.status == 1) {
-			if (currentPage <mMainData.data.total) {
-				AddItemToContainer(2,currentPage+=24);
-			}else{
-				Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
-				return;
-			}
-		}	
+		if (NetworkUtils.isNetworkAvailable(this))
+        {
+			if (mMainData.status == 1) {
+				if (currentPage <mMainData.data.total) {
+					AddItemToContainer(2,currentPage+=24);			
+				}else{
+					Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}	
+        }
 	}
 	
 }

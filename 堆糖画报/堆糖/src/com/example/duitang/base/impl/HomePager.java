@@ -52,7 +52,7 @@ public class HomePager extends BasePager {
 //			Log.i("tag", "»º´æ½á¹û:"+cache);
 			parseData(cache);
 		}
-		getDataFromServer();
+		getDataFromServer();	
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class HomePager extends BasePager {
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mActivity, "No network connection found.", Toast.LENGTH_SHORT).show();
 				error.printStackTrace();
 				
 			}

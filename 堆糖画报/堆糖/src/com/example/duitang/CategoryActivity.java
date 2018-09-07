@@ -15,6 +15,7 @@ import com.example.duitang.model.CategoryDetail;
 import com.example.duitang.model.CategoryDetail.Sub_Cates;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
+import com.example.duitang.utils.NetworkUtils;
 import com.example.duitang.utils.PrefUtils;
 import com.google.gson.Gson;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
@@ -180,7 +181,7 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				
+				Toast.makeText(CategoryActivity.this, "No network connection found.", Toast.LENGTH_SHORT).show();
 				error.printStackTrace();
 				
 			}
@@ -319,11 +320,13 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
      * 1为下拉刷新 2为加载更多
      */
     private void AddItemToContainer(int type,int pageindex) {
+    	if (NetworkUtils.isNetworkAvailable(this)){
         if (task.getStatus() != Status.RUNNING) {
         	String DownUrl = NetInterface.CATEGORYDETAIL + pageindex+"&platform_name=Android&locale=zh&app_code=nayutas&cate_key="+getIntent().getStringExtra("Key");
             ContentTask task = new ContentTask(this, type);
             task.execute(DownUrl);
-        }
+          }
+    	}
     }
     
 	private class ContentTask extends AsyncTask<String, Integer, List<ObjectList>> {
@@ -551,14 +554,17 @@ public class CategoryActivity extends Activity implements OnClickListener,IXList
 
 	@Override
 	public void onLoadMore() {
-		if (mMainData.status == 1) {
-			if (mMainData.data.more==1) {
-				AddItemToContainer(2,currentPage+=24);
-			}else{
-				Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
-				return;
-			}
-		}	
+		if (NetworkUtils.isNetworkAvailable(this))
+        {
+			if (mMainData.status == 1) {
+				if (currentPage <mMainData.data.total) {
+					AddItemToContainer(2,currentPage+=24);			
+				}else{
+					Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}	
+        }
 	}
 		
 

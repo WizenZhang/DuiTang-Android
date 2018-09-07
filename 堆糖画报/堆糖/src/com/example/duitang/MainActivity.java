@@ -2,7 +2,8 @@ package com.example.duitang;
 
 
 
-import com.example.duitang.fragmen.ContentFragment;
+import com.example.duitang.fragment.ContentFragment;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;

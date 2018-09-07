@@ -7,6 +7,7 @@ import com.example.duitang.global.CategoryImageUrl;
 import com.example.duitang.global.NetInterface;
 import com.example.duitang.model.CategoryData;
 import com.example.duitang.model.CategoryData.Datas;
+import com.example.duitang.utils.CacheUtils;
 import com.google.gson.Gson;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -18,6 +19,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -54,7 +56,14 @@ public class CategoryPager extends BasePager{
 		//向FrameLayout中动态添加布局
 		flContent.removeAllViews();//清除之前的布局
 		flContent.addView(view);
-		getDataFromServer();
+		String cache = CacheUtils.getCache(NetInterface.CATEGORY,
+				mActivity);
+		if (!TextUtils.isEmpty(cache)) {// 如果缓存存在,直接解析数据, 无需访问网路
+//			Log.i("tag", "缓存结果:"+cache);
+			parseData(cache);
+		}
+		getDataFromServer();	
+
 	}
 
 	/**
@@ -70,11 +79,14 @@ public class CategoryPager extends BasePager{
 			public void onSuccess(ResponseInfo<String> responseInfo) {
 				String result = responseInfo.result;
 				parseData(result);
+				// 设置缓存
+				CacheUtils.setCache(NetInterface.CATEGORY,
+						result, mActivity);
 			}
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mActivity, "No network connection found.", Toast.LENGTH_SHORT).show();
 				error.printStackTrace();
 				
 			}

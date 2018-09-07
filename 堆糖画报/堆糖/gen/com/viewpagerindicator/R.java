@@ -96,7 +96,7 @@ public final class R {
 	}
 	public static final class id {
 		public static final int bottom = 0x7f050032;
-		public static final int none = 0x7f050004;
+		public static final int none = 0x7f050005;
 		public static final int top = 0x7f050033;
 		public static final int triangle = 0x7f050030;
 		public static final int underline = 0x7f050031;

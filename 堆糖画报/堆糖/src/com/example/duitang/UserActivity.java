@@ -14,6 +14,7 @@ import com.example.duitang.model.BannerDetailData.Data;
 import com.example.duitang.model.MainData;
 import com.example.duitang.model.MainData.ObjectList;
 import com.example.duitang.utils.FastBlurUtil;
+import com.example.duitang.utils.NetworkUtils;
 import com.example.duitang.utils.PrefUtils;
 import com.example.duitang.view.RoundImageView;
 import com.google.gson.Gson;
@@ -177,7 +178,7 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				
+				Toast.makeText(UserActivity.this, "No network connection found.", Toast.LENGTH_SHORT).show();
 				error.printStackTrace();
 				
 			}
@@ -247,12 +248,14 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
      * 1为下拉刷新 2为加载更多
      */
     private void AddItemToContainer(int type,int pageindex) {
+    	if (NetworkUtils.isNetworkAvailable(this)){
         if (task.getStatus() != Status.RUNNING) {
         	String userDownUrl = NetInterface.BANNERDETAILDOWN + pageindex + "&app_version=57&album_id=" + getIntent().getStringExtra("ID");
             ContentTask task = new ContentTask(this, type);
 //            Log.i("tag", "url:" + userDownUrl);
             task.execute(userDownUrl);
-        }
+          }
+    	}
     }
     
 	private class ContentTask extends AsyncTask<String, Integer, List<ObjectList>> {
@@ -473,14 +476,17 @@ public class UserActivity extends Activity implements OnClickListener,IXListView
 
 	@Override
 	public void onLoadMore() {
-		if (mMainData.status == 1) {
-			if (currentPage <mMainData.data.total) {
-				AddItemToContainer(2,currentPage+=24);
-			}else{
-				Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
-				return;
-			}
-		}	
+		if (NetworkUtils.isNetworkAvailable(this))
+        {
+			if (mMainData.status == 1) {
+				if (currentPage <mMainData.data.total) {
+					AddItemToContainer(2,currentPage+=24);			
+				}else{
+					Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}	
+        }	
 	}
 		
 
